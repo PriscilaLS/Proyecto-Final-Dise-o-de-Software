@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "dgSpecHash": "53E64h+QvKc=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\helia\\OneDrive\\Documentos\\GitHub\\Proyecto-Final-Dise-o-de-Software\\src\\ClientLocal\\ClientLocal.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\helia\\.nuget\\packages\\microsoft.netcore.app.ref\\8.0.27\\microsoft.netcore.app.ref.8.0.27.nupkg.sha512",
+    "C:\\Users\\helia\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\8.0.27\\microsoft.windowsdesktop.app.ref.8.0.27.nupkg.sha512",
+    "C:\\Users\\helia\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\8.0.27\\microsoft.aspnetcore.app.ref.8.0.27.nupkg.sha512",
+    "C:\\Users\\helia\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\8.0.27\\microsoft.netcore.app.host.win-x64.8.0.27.nupkg.sha512"
+  ],
+  "logs": []
+}
