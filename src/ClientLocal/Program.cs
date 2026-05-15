@@ -1,19 +1,20 @@
+using Avalonia;
 using System;
-using System.Windows;
-using ClientLocal.Services.Session;
-using ClientLocal.Views.Auth;
 
-namespace ClientLocal
+namespace ClientLocal;
+
+class Program
 {
-    public static class Program
-    {
-        [STAThread]
-        public static void Main()
-        {
-            var app = new Application();
-            var sessionService = new SessionService();
-            var loginView = new LoginView(sessionService);
-            app.Run(loginView);
-        }
-    }
+    [STAThread]
+    public static void Main(string[] args) => BuildAvaloniaApp()
+        .StartWithClassicDesktopLifetime(args);
+
+    public static AppBuilder BuildAvaloniaApp()
+        => AppBuilder.Configure<App>()
+            .UsePlatformDetect()
+#if DEBUG
+            .WithDeveloperTools()
+#endif
+            .WithInterFont()
+            .LogToTrace();
 }
