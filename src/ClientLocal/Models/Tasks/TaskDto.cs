@@ -7,13 +7,13 @@ namespace ClientLocal.Models.Tasks
         [JsonPropertyName("id")]
         public int Id { get; set; }
 
-        [JsonPropertyName("nombre")]
-        public string Nombre { get; set; } = string.Empty;
+        [JsonPropertyName("title")]
+        public string Title { get; set; } = string.Empty;
 
-        [JsonPropertyName("descripcion")]
-        public string? Descripcion { get; set; }
+        [JsonPropertyName("description")]
+        public string? Description { get; set; }
 
-        [JsonPropertyName("fechaLimite")]
-        public string? FechaLimite { get; set; }
+        [JsonPropertyName("due_date")]
+        public string? DueDate { get; set; }
     }
 }

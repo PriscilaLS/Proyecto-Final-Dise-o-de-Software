@@ -7,10 +7,13 @@ namespace ClientLocal.Models.Courses
         [JsonPropertyName("id")]
         public int Id { get; set; }
 
-        [JsonPropertyName("nombre")]
-        public string Nombre { get; set; } = string.Empty;
+        [JsonPropertyName("name")]
+        public string Name { get; set; } = string.Empty;
 
-        [JsonPropertyName("descripcion")]
-        public string? Descripcion { get; set; }
+        [JsonPropertyName("description")]
+        public string? Description { get; set; }
+
+        [JsonPropertyName("join_code")]
+        public string? JoinCode { get; set; }
     }
 }

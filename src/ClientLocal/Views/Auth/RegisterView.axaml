@@ -1,0 +1,25 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="ClientLocal.Views.Auth.RegisterView">
+  <Border Padding="24">
+    <StackPanel Spacing="12" Width="320" HorizontalAlignment="Center" VerticalAlignment="Center">
+      <TextBlock Text="Crear cuenta" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center"/>
+
+      <TextBlock Text="Nombre"/>
+      <TextBox x:Name="NameTextBox"/>
+
+      <TextBlock Text="Correo"/>
+      <TextBox x:Name="EmailTextBox"/>
+
+      <TextBlock Text="Contraseña"/>
+      <TextBox x:Name="PasswordTextBox" PasswordChar="*"/>
+
+      <TextBlock x:Name="StatusTextBlock" Foreground="Red" TextWrapping="Wrap"/>
+
+      <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Center">
+        <Button Content="Registrar" Width="120" Click="RegisterButton_Click"/>
+        <Button Content="Volver" Width="120" Click="BackButton_Click"/>
+      </StackPanel>
+    </StackPanel>
+  </Border>
+</UserControl>

@@ -4,10 +4,10 @@ namespace ClientLocal.Models.Auth
 {
     public class LoginRequest
     {
-        [JsonPropertyName("correo")]
-        public string Correo { get; set; } = string.Empty;
+        [JsonPropertyName("email")]
+        public string Email { get; set; } = string.Empty;
 
-        [JsonPropertyName("contrasena")]
-        public string Contrasena { get; set; } = string.Empty;
+        [JsonPropertyName("password")]
+        public string Password { get; set; } = string.Empty;
     }
 }

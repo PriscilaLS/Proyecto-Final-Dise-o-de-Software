@@ -1,6 +1,8 @@
+using System;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
+using System.Threading.Tasks;
 using ClientLocal.Models.Auth;
 
 namespace ClientLocal.Services.Api
@@ -10,9 +12,13 @@ namespace ClientLocal.Services.Api
         private readonly HttpClient _httpClient;
         private readonly JsonSerializerOptions _jsonOptions;
 
-        public AuthRepository(HttpClient httpClient)
+        public AuthRepository()
         {
-            _httpClient = httpClient;
+            _httpClient = new HttpClient
+            {
+                BaseAddress = new Uri("http://localhost/ProyectoFinalDS/src/Backend/app.php/")
+            };
+
             _jsonOptions = new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true
@@ -27,21 +33,14 @@ namespace ClientLocal.Services.Api
             var response = await _httpClient.PostAsync("auth/login", content);
             var body = await response.Content.ReadAsStringAsync();
 
+            var result = JsonSerializer.Deserialize<AuthResponse>(body, _jsonOptions) ?? new AuthResponse();
+
             if (!response.IsSuccessStatusCode)
             {
-                return new AuthResponse
-                {
-                    Success = false,
-                    Mensaje = $"Error {response.StatusCode}: {body}"
-                };
+                result.Error ??= $"Error {response.StatusCode}";
             }
 
-            var result = JsonSerializer.Deserialize<AuthResponse>(body, _jsonOptions);
-            return result ?? new AuthResponse
-            {
-                Success = false,
-                Mensaje = "Respuesta vacía del servidor."
-            };
+            return result;
         }
 
         public async Task<AuthResponse> RegisterAsync(RegisterRequest request)
@@ -52,21 +51,14 @@ namespace ClientLocal.Services.Api
             var response = await _httpClient.PostAsync("auth/register", content);
             var body = await response.Content.ReadAsStringAsync();
 
+            var result = JsonSerializer.Deserialize<AuthResponse>(body, _jsonOptions) ?? new AuthResponse();
+
             if (!response.IsSuccessStatusCode)
             {
-                return new AuthResponse
-                {
-                    Success = false,
-                    Mensaje = $"Error {response.StatusCode}: {body}"
-                };
+                result.Error ??= $"Error {response.StatusCode}";
             }
 
-            var result = JsonSerializer.Deserialize<AuthResponse>(body, _jsonOptions);
-            return result ?? new AuthResponse
-            {
-                Success = false,
-                Mensaje = "Respuesta vacía del servidor."
-            };
+            return result;
         }
     }
 }

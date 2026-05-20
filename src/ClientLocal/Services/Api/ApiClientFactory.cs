@@ -11,8 +11,7 @@ namespace ClientLocal.Services.Api
         {
             var client = new HttpClient
             {
-                BaseAddress = new Uri("http://localhost:8000/")
-                // Cambiar luego por la URL real del backend
+                BaseAddress = new Uri("http://localhost/ProyectoFinalDS/src/Backend/app.php/")
             };
 
             client.DefaultRequestHeaders.Accept.Clear();
