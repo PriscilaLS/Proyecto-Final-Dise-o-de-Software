@@ -1,0 +1,11 @@
+# Build artifacts
+bin/
+obj/
+*.lscache
+
+# Runtime/debug files
+src/Backend/debug.txt
+
+# Uploaded submissions are runtime data, not source code.
+src/Backend/Submissions/*
+!src/Backend/Submissions/.gitkeep

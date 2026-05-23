@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/BaseModel.php';
+require_once __DIR__ . '/baseModel.php';
 
 class UserModel extends BaseModel {
     public function getTableName(): string {
