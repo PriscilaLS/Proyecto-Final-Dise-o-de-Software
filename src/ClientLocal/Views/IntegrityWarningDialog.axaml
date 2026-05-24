@@ -1,0 +1,83 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="ClientLocal.Views.IntegrityWarningDialog"
+        Width="430"
+        Height="255"
+        CanResize="False"
+        WindowStartupLocation="CenterOwner"
+        Background="#1e1e1e"
+        Title="Advertencia de integridad">
+
+    <StackPanel Margin="24" Spacing="16">
+
+        <Image x:Name="WarningIcon"
+               Width="32"
+               Height="32"
+               HorizontalAlignment="Center" />
+
+        <TextBlock x:Name="TitleText"
+                   Text="El archivo fue modificado fuera de EduIDE."
+                   Foreground="#f87171"
+                   FontSize="14"
+                   FontWeight="Bold"
+                   TextWrapping="Wrap"
+                   HorizontalAlignment="Center" />
+
+        <TextBlock x:Name="DescriptionText"
+                   Text="La firma de integridad no coincide. Esto puede ocurrir si el archivo fue editado con otro editor o modificado manualmente."
+                   TextWrapping="Wrap"
+                   Foreground="#aaaaaa"
+                   FontSize="12"
+                   TextAlignment="Center" />
+
+        <StackPanel Orientation="Horizontal"
+                    HorizontalAlignment="Center"
+                    Spacing="10"
+                    Margin="0,8,0,0">
+
+            <Button Name="CancelBtn"
+                    Content="Cancelar"
+                    Width="100"
+                    Padding="12,6"
+                    Background="#242424"
+                    BorderBrush="#2a2a2a"
+                    Foreground="#dddddd" />
+
+            <Button Name="DeleteBtn"
+                    Content="Eliminar"
+                    Width="100"
+                    Padding="12,6"
+                    Background="#3b1f1f"
+                    BorderBrush="#4b2a2a"
+                    Foreground="#ffbbbb"
+                    IsVisible="False" />
+
+            <Button Name="ReadOnlyBtn"
+                    Content="Solo lectura"
+                    Width="110"
+                    Padding="12,6"
+                    Background="#242424"
+                    BorderBrush="#2a2a2a"
+                    Foreground="#dddddd" />
+
+            <Button Name="TrustBtn"
+                    Content="Restaurar"
+                    Width="120"
+                    Padding="12,6"
+                    Background="#242424"
+                    BorderBrush="#2a2a2a"
+                    Foreground="#dddddd" />
+            
+            <Button Name="RestoreBtn"
+                    Content="Restaurar última versión"
+                    Width="160"
+                    Padding="12,6"
+                    Background="#1f2d3b"
+                    BorderBrush="#2a3f52"
+                    Foreground="#7dd3fc"
+                    IsVisible="False" />
+
+        </StackPanel>
+
+    </StackPanel>
+</Window>

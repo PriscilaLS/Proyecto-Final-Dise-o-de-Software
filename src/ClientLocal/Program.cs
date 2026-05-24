@@ -16,6 +16,7 @@ class Program
     public static AppBuilder BuildAvaloniaApp()
         => AppBuilder.Configure<App>()
             .UsePlatformDetect()
+            .UseSkia()
 #if DEBUG
             .WithDeveloperTools()
 #endif

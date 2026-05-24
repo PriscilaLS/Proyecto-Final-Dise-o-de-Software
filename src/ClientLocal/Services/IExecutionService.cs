@@ -1,8 +1,12 @@
+using System;
 using System.Threading.Tasks;
 
 namespace ClientLocal.Services;
 
 public interface IExecutionService
 {
-    Task<string> RunAsync(string filePath);
+   bool IsRunning { get; }
+   Task RunAsync(string filePath, Action<string, bool> onOutput);
+   void SendInput(string input);
+   void Stop();
 }

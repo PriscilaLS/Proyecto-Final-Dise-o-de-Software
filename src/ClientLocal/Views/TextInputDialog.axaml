@@ -1,0 +1,162 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="ClientLocal.Views.TextInputDialog"
+        Title="EduIDE"
+        Width="430"
+        Height="230"
+        CanResize="False"
+        WindowStartupLocation="CenterOwner"
+        Background="#181818">
+
+    <Window.Styles>
+
+        <Style Selector="TextBox">
+            <Setter Property="Background" Value="#242424"/>
+            <Setter Property="Foreground" Value="#777777"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="CaretBrush" Value="#7dcfff"/>
+            <Setter Property="SelectionBrush" Value="#264f78"/>
+        </Style>
+
+        <Style Selector="TextBox:focus">
+            <Setter Property="Background" Value="#242424"/>
+            <Setter Property="Foreground" Value="#777777"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+
+        <Style Selector="TextBox:pointerover">
+            <Setter Property="BorderBrush" Value="Transparent"/>
+        </Style>
+
+        <Style Selector="TextBox:error">
+            <Setter Property="BorderBrush" Value="Transparent"/>
+        </Style>
+
+        <Style Selector="TextBox /template/ Border">
+            <Setter Property="Background" Value="#242424"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+
+        <Style Selector="TextBox:focus /template/ Border">
+            <Setter Property="Background" Value="#242424"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+        
+        <Style Selector="Button">
+            <Setter Property="Background" Value="#242424"/>
+            <Setter Property="BorderBrush" Value="#2a2a2a"/>
+            <Setter Property="Foreground" Value="#dddddd"/>
+            <Setter Property="Padding" Value="6,4"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+        
+        <Style Selector="Button:pointerover">
+            <Setter Property="Background" Value="#242424"/>
+            <Setter Property="BorderBrush" Value="#2a2a2a"/>
+            <Setter Property="Foreground" Value="#dddddd"/>
+        </Style>
+        
+        <Style Selector="Button:pressed">
+            <Setter Property="Background" Value="#242424"/>
+            <Setter Property="BorderBrush" Value="#2a2a2a"/>
+            <Setter Property="Foreground" Value="#dddddd"/>
+        </Style>
+        
+        <Style Selector="Button:focus">
+            <Setter Property="Background" Value="#242424"/>
+            <Setter Property="BorderBrush" Value="#2a2a2a"/>
+            <Setter Property="Foreground" Value="#dddddd"/>
+        </Style>
+        
+        
+        <Style Selector="Button /template/ ContentPresenter">
+            <Setter Property="TextElement.Foreground" Value="#dddddd"/>
+        </Style>
+
+        <Style Selector="Button:pointerover /template/ ContentPresenter">
+            <Setter Property="TextElement.Foreground" Value="#dddddd"/>
+        </Style>
+
+        <Style Selector="Button:pressed /template/ ContentPresenter">
+            <Setter Property="TextElement.Foreground" Value="#dddddd"/>
+        </Style>
+
+        <Style Selector="Button:focus /template/ ContentPresenter">
+            <Setter Property="TextElement.Foreground" Value="#dddddd"/>
+        </Style>
+
+    </Window.Styles>
+
+    <StackPanel Margin="20" Spacing="12">
+
+        <TextBlock Name="Label"
+                   Foreground="#cccccc"
+                   FontSize="12"/>
+
+        <!-- Nombre -->
+        <TextBox Name="Entry"
+                 Background="#242424"
+                 Foreground="#dddddd"
+                 BorderBrush="#2a2a2a"/>
+
+        <!-- Directorio -->
+        <StackPanel Name="DirectoryPanel"
+                    IsVisible="False"
+                    Spacing="6">
+
+            <TextBlock Text="Directorio"
+                       Foreground="#cccccc"
+                       FontSize="12"/>
+
+            <Grid ColumnDefinitions="*,Auto"
+                  ColumnSpacing="8">
+
+                <TextBox Name="DirectoryEntry"
+                         Grid.Column="0"
+                         Background="#242424"
+                         Foreground="#dddddd"
+                         BorderBrush="#2a2a2a"/>
+
+                <Button Name="BrowseBtn"
+                        Grid.Column="1"
+                        Width="34"
+                        Height="34"
+                        Background="#242424"
+                        BorderBrush="#2a2a2a">
+
+                    <Image Source="avares://ClientLocal/Assets/folder.png"
+                           Width="16"
+                           Height="16"/>
+                </Button>
+
+            </Grid>
+
+        </StackPanel>
+
+        <!-- Botones -->
+        <StackPanel Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Spacing="8">
+
+            <Button Name="CancelBtn"
+                    Content="Cancelar"
+                    Background="#242424"
+                    BorderBrush="#2a2a2a"
+                    Foreground="#dddddd"/>
+
+            <Button Name="AcceptBtn"
+                    Content="Aceptar"
+                    Background="#242424"
+                    BorderBrush="#2a2a2a"
+                    Foreground="#dddddd"/>
+
+        </StackPanel>
+
+    </StackPanel>
+
+</Window>

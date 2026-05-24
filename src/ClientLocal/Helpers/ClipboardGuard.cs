@@ -1,7 +1,7 @@
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using ClientLocal.Services;
 
 namespace ClientLocal.Helpers;
 
@@ -20,29 +20,41 @@ public class ClipboardGuard
         );
     }
 
-    private async void OnEditorKeyDown(object? sender, KeyEventArgs e)
+    private void OnEditorKeyDown(object? sender, KeyEventArgs e)
     {
         bool isCmd = e.KeyModifiers.HasFlag(KeyModifiers.Meta) ||
                      e.KeyModifiers.HasFlag(KeyModifiers.Control);
 
-        if (isCmd && e.Key == Key.C || isCmd && e.Key == Key.X)
+        if (isCmd && (e.Key == Key.C || e.Key == Key.X))
         {
             _internalClipboard = _editor.SelectedText;
+            return;
         }
 
         if (isCmd && e.Key == Key.V)
         {
-            e.Handled = true;
-
-            var clipboard = TopLevel.GetTopLevel(_editor)!.Clipboard as Avalonia.Input.IAsyncDataTransfer;
-            string? clipText = clipboard != null ? await clipboard.TryGetTextAsync() : null;
-
-            if (clipText != null && clipText == _internalClipboard)
+            if (!string.IsNullOrEmpty(_internalClipboard))
             {
+                e.Handled = true;
                 int caret = _editor.CaretIndex;
                 string current = _editor.Text ?? "";
-                _editor.Text = current.Insert(caret, clipText);
-                _editor.CaretIndex = caret + clipText.Length;
+                _editor.Text = current.Insert(caret, _internalClipboard);
+                _editor.CaretIndex = caret + _internalClipboard.Length;
+                _internalClipboard = null;
+            }
+            else
+            {
+                e.Handled = true;
+                var owner = TopLevel.GetTopLevel(_editor) as Window;
+                if (owner != null)
+                {
+                    ErrorService.GetInstance().ShowError(
+                        owner,
+                        "Pegado externo no permitido",
+                        "Esta aplicación solo permite pegar texto que hayas copiado dentro del editor. " +
+                        "No se permite pegar contenido externo para garantizar la integridad de tu trabajo."
+                    );
+                }
             }
         }
     }
