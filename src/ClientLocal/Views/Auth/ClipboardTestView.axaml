@@ -1,0 +1,36 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="ClientLocal.Views.Auth.ClipboardTestView">
+  <Border Padding="24">
+    <Grid RowDefinitions="Auto,Auto,*,Auto">
+      <TextBlock Text="Prueba temporal de ClipboardGuard"
+                 FontSize="24"
+                 FontWeight="Bold"
+                 Margin="0,0,0,16"/>
+
+      <TextBlock Grid.Row="1"
+                 Text="Copia dentro del mismo editor y pega: debe funcionar. Copia desde fuera y pega: debe bloquearse."
+                 TextWrapping="Wrap"
+                 Margin="0,0,0,16"/>
+
+      <TextBox x:Name="EditorTextBox"
+               Grid.Row="2"
+               AcceptsReturn="True"
+               TextWrapping="Wrap"
+               ScrollViewer.VerticalScrollBarVisibility="Auto"
+               MinHeight="280"
+               Text="Escribe aquí. Selecciona texto dentro de este mismo editor, cópialo y pégalo para probar."/>
+
+      <StackPanel Grid.Row="3" Margin="0,16,0,0" Spacing="10">
+        <TextBlock x:Name="StatusTextBlock"
+                   Foreground="Orange"
+                   TextWrapping="Wrap"
+                   Text="Prueba pendiente."/>
+        <Button Content="Volver"
+                Width="120"
+                HorizontalAlignment="Left"
+                Click="BackButton_Click"/>
+      </StackPanel>
+    </Grid>
+  </Border>
+</UserControl>

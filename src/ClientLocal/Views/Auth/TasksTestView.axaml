@@ -1,0 +1,32 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:models="clr-namespace:ClientLocal.Models.Tasks"
+             x:Class="ClientLocal.Views.Auth.TasksTestView">
+  <Border Padding="24">
+    <Grid RowDefinitions="Auto,*,Auto">
+      <TextBlock x:Name="TitleTextBlock"
+                 FontSize="24"
+                 FontWeight="Bold"
+                 Margin="0,0,0,16"/>
+
+      <ListBox x:Name="TasksListBox"
+               Grid.Row="1"
+               SelectionChanged="TasksListBox_SelectionChanged">
+        <ListBox.ItemTemplate>
+          <DataTemplate x:DataType="models:TaskDto">
+            <TextBlock Text="{Binding Title}"/>
+          </DataTemplate>
+        </ListBox.ItemTemplate>
+      </ListBox>
+
+      <StackPanel Grid.Row="2" Spacing="10" Margin="0,16,0,0">
+        <TextBlock x:Name="DetailsTextBlock" TextWrapping="Wrap"/>
+        <TextBlock x:Name="StatusTextBlock" Foreground="Red" TextWrapping="Wrap"/>
+        <Button Content="Ir a entrega"
+                Width="140"
+                HorizontalAlignment="Left"
+                Click="GoToSubmitButton_Click"/>
+      </StackPanel>
+    </Grid>
+  </Border>
+</UserControl>

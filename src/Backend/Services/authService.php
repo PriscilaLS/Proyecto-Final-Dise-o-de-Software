@@ -1,6 +1,6 @@
 <?php
-require_once __DIR__ . '/../Models/UserModel.php';
-require_once __DIR__ . '/CertificateService.php';
+require_once __DIR__ . '/../Models/userModel.php';
+require_once __DIR__ . '/certificateService.php';
 
 class AuthService {
     private UserModel $userModel;
@@ -12,6 +12,10 @@ class AuthService {
     }
 
     public function register(array $data): array {
+        if (!in_array($data['role'], ['student', 'teacher'], true)) {
+            throw new Exception("Rol invalido");
+        }
+
         // Verificar si el email ya existe
         $existing = $this->userModel->findByField('email', $data['email']);
         if ($existing) {
@@ -56,16 +60,23 @@ class AuthService {
     }
 
     private function generateJWT(array $user): string {
-        $secret  = 'TU_SECRET_KEY_CAMBIALA';
-        $header  = base64_encode(json_encode(['alg' => 'HS256', 'typ' => 'JWT']));
-        $payload = base64_encode(json_encode([
+    $secret  = 'TU_SECRET_KEY_CAMBIALA';
+    $header  = rtrim(strtr(base64_encode(
+        json_encode(['alg' => 'HS256', 'typ' => 'JWT'])
+    ), '+/', '-_'), '=');
+    
+    $payload = rtrim(strtr(base64_encode(
+        json_encode([
             'id'   => $user['id'],
             'role' => $user['role'],
             'exp'  => time() + 86400
-        ]));
-        $signature = base64_encode(
-            hash_hmac('sha256', "$header.$payload", $secret, true)
-        );
-        return "$header.$payload.$signature";
-    }
+        ])
+    ), '+/', '-_'), '=');
+    
+    $signature = rtrim(strtr(base64_encode(
+        hash_hmac('sha256', "$header.$payload", $secret, true)
+    ), '+/', '-_'), '=');
+    
+    return "$header.$payload.$signature";
+}
 }

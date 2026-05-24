@@ -13,7 +13,7 @@ Body:
   "name": "...",
   "email": "...",
   "password": "...",
-  "role": "student | professor"
+  "role": "student | teacher"
 }
 
 Respuesta 200:
@@ -39,7 +39,7 @@ Body:
 Respuesta 200:
 {
   "token": "jwt...",
-  "user": { "id": 1, "name": "...", "role": "student | professor" }
+  "user": { "id": 1, "name": "...", "role": "student | teacher" }
 }
 
 Respuesta 401:
@@ -52,7 +52,7 @@ Respuesta 401:
 ## COURSES
 
 ### POST /courses
-Header: Authorization: Bearer {token}  (solo profesor)
+Header: Authorization: Bearer {token}  (solo teacher)
 Body:
 {
   "name": "...",
@@ -67,7 +67,7 @@ Respuesta 200:
 
 Respuesta 403:
 {
-  "error": "Solo los profesores pueden crear cursos"
+  "error": "Solo los teachers pueden hacer esto"
 }
 
 ---
@@ -119,7 +119,7 @@ Respuesta 200:
 ---
 
 ### POST /courses/{id}/tasks
-Header: Authorization: Bearer {token}  (solo profesor)
+Header: Authorization: Bearer {token}  (solo teacher)
 Body:
 {
   "title": "...",
@@ -157,7 +157,7 @@ Respuesta 400:
 ---
 
 ### GET /tasks/{id}/submissions
-Header: Authorization: Bearer {token}  (solo profesor)
+Header: Authorization: Bearer {token}  (solo teacher)
 
 Respuesta 200:
 [
@@ -172,7 +172,7 @@ Respuesta 200:
 ---
 
 ### GET /submissions/{id}/download
-Header: Authorization: Bearer {token}  (solo profesor)
+Header: Authorization: Bearer {token}  (solo teacher)
 
 Respuesta 200: archivo ZIP descargable
 Respuesta 404:

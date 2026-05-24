@@ -1,0 +1,38 @@
+<Window x:Class="ClientLocal.Views.Tasks.TasksView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Tareas del curso"
+        Height="500"
+        Width="620"
+        WindowStartupLocation="CenterScreen">
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock x:Name="TituloCursoTextBlock"
+                   FontSize="22"
+                   FontWeight="Bold"
+                   Margin="0,0,0,10"/>
+
+        <TextBlock Grid.Row="1"
+                   Text="Selecciona una tarea para ver su detalle."
+                   Margin="0,0,0,10"/>
+
+        <ListBox x:Name="TasksListBox"
+                 Grid.Row="2"
+                 SelectionChanged="TasksListBox_SelectionChanged"
+                 DisplayMemberPath="Nombre"/>
+
+        <StackPanel Grid.Row="3" Margin="0,15,0,0">
+            <TextBlock x:Name="DetalleTextBlock"
+                       TextWrapping="Wrap"
+                       Margin="0,0,0,10"/>
+            <TextBlock x:Name="EstadoTextBlock"
+                       Foreground="Red"/>
+        </StackPanel>
+    </Grid>
+</Window>

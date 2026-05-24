@@ -1,0 +1,53 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="ClientLocal.Views.Auth.SubmitTestView">
+  <Border Padding="24">
+    <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,*">
+      <TextBlock x:Name="TitleTextBlock"
+                 FontSize="24"
+                 FontWeight="Bold"
+                 Margin="0,0,0,16"/>
+
+      <TextBlock Grid.Row="1"
+                 Text="Selecciona la carpeta del proyecto que vas a entregar."
+                 Margin="0,0,0,12"/>
+
+      <StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="10">
+        <TextBox x:Name="ProjectPathTextBox"
+                 Width="500"
+                 IsReadOnly="True"/>
+        <Button Content="Elegir carpeta"
+                Click="PickFolderButton_Click"/>
+      </StackPanel>
+
+      <StackPanel Grid.Row="3" Orientation="Horizontal" Spacing="10" Margin="0,16,0,0">
+        <Button Content="Firmar proyecto"
+                Width="140"
+                Click="SignButton_Click"/>
+        <Button Content="Validar firmas"
+                Width="140"
+                Click="ValidateButton_Click"/>
+        <Button Content="Enviar entrega"
+                Width="140"
+                Click="SubmitButton_Click"/>
+        <Button Content="Probar clipboard"
+                Width="140"
+                Click="ClipboardTestButton_Click"/>
+        <Button Content="Volver"
+                Width="120"
+                Click="BackButton_Click"/>
+      </StackPanel>
+
+      <TextBlock Grid.Row="4"
+                 x:Name="StatusTextBlock"
+                 Foreground="Red"
+                 TextWrapping="Wrap"
+                 Margin="0,16,0,0"/>
+
+      <TextBlock Grid.Row="5"
+                 x:Name="ResultTextBlock"
+                 TextWrapping="Wrap"
+                 Margin="0,12,0,0"/>
+    </Grid>
+  </Border>
+</UserControl>

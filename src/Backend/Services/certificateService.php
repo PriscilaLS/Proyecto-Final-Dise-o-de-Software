@@ -1,4 +1,3 @@
-// genera certificado al registrar
 <?php
 class CertificateService {
     public function generateKeyPair(): array {

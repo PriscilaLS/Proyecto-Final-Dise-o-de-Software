@@ -1,0 +1,33 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:models="clr-namespace:ClientLocal.Models.Courses"
+             x:Class="ClientLocal.Views.Auth.CoursesTestView">
+  <Border Padding="24">
+    <Grid RowDefinitions="Auto,*,Auto">
+      <TextBlock Text="Cursos matriculados"
+                 FontSize="24"
+                 FontWeight="Bold"
+                 Margin="0,0,0,16"/>
+
+      <ListBox x:Name="CoursesListBox"
+               Grid.Row="1">
+        <ListBox.ItemTemplate>
+          <DataTemplate x:DataType="models:CourseDto">
+            <StackPanel Margin="0,0,0,10">
+              <TextBlock Text="{Binding Name}" FontWeight="Bold"/>
+              <TextBlock Text="{Binding Description}" Opacity="0.8"/>
+            </StackPanel>
+          </DataTemplate>
+        </ListBox.ItemTemplate>
+      </ListBox>
+
+      <StackPanel Grid.Row="2" Spacing="10" Margin="0,16,0,0">
+        <TextBlock x:Name="StatusTextBlock" Foreground="Red" TextWrapping="Wrap"/>
+        <Button Content="Ver tareas del curso"
+                Width="170"
+                HorizontalAlignment="Left"
+                Click="OpenTasksButton_Click"/>
+      </StackPanel>
+    </Grid>
+  </Border>
+</UserControl>
