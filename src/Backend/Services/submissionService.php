@@ -1,4 +1,8 @@
 <?php
+/*
+ * Servicio de entregas.
+ * Valida permisos, valida archivos ZIP, guarda entregas y calcula si fueron tardias.
+ */
 require_once __DIR__ . '/../Repositories/submissionRepository.php';
 
 class SubmissionService {
@@ -60,6 +64,12 @@ class SubmissionService {
         }
 
         return $this->submissionRepo->findByTaskId($taskId);
+    }
+
+    public function getMySubmissionsByTask(int $taskId, array $payload): array {
+        // Para historial propio, el filtro importante es student_id.
+        // Aunque se consulte otra tarea, solo se devuelven entregas del usuario autenticado.
+        return $this->submissionRepo->findByTaskAndStudent($taskId, (int) $payload['id']);
     }
 
     public function getDownloadPath(int $submissionId, array $payload): string {

@@ -1,3 +1,6 @@
+-- Estructura completa de la base de datos del sistema.
+-- Crea usuarios, cursos, matriculas, tareas y entregas para el backend PHP.
+
 CREATE DATABASE IF NOT EXISTS ide_educativo
   CHARACTER SET utf8mb4
   COLLATE utf8mb4_general_ci;

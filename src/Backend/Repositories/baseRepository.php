@@ -1,4 +1,8 @@
 <?php
+/*
+ * Repositorio base.
+ * Define operaciones comunes para repositorios y obliga a implementar guardar/listar.
+ */
 require_once __DIR__ . '/../Models/baseModel.php';
 
 abstract class BaseRepository {

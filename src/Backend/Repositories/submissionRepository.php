@@ -1,4 +1,8 @@
 <?php
+/*
+ * Repositorio de entregas.
+ * Encapsula consultas SQL para guardar entregas, consultar tareas y verificar propietarios.
+ */
 require_once __DIR__ . '/baseRepository.php';
 require_once __DIR__ . '/../Models/submissionModel.php';
 
@@ -22,6 +26,17 @@ class SubmissionRepository extends BaseRepository {
 
     public function findByTaskId(int $taskId): array {
         return $this->submissionModel->findByTaskId($taskId);
+    }
+
+    public function findByTaskAndStudent(int $taskId, int $studentId): array {
+        $stmt = $this->submissionModel->db->prepare(
+            "SELECT id, task_id, student_id, file_path, submitted_at, is_late
+             FROM submissions
+             WHERE task_id = ? AND student_id = ?
+             ORDER BY submitted_at DESC"
+        );
+        $stmt->execute([$taskId, $studentId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function findTaskById(int $taskId): ?array {

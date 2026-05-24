@@ -1,4 +1,8 @@
 <?php
+/*
+ * Servicio de cursos.
+ * Aplica reglas para crear cursos, listar cursos segun rol y unir estudiantes por codigo.
+ */
 require_once __DIR__ . '/../Repositories/CourseRepository.php';
 
 class CourseService {

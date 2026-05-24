@@ -1,4 +1,8 @@
 <?php
+/*
+ * Repositorio de tareas.
+ * Encapsula consultas SQL para tareas y permisos de acceso por curso.
+ */
 require_once __DIR__ . '/baseRepository.php';
 require_once __DIR__ . '/../Models/taskModel.php';
 require_once __DIR__ . '/../Models/courseModel.php';

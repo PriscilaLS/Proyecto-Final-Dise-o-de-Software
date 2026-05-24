@@ -1,4 +1,8 @@
 <?php
+/*
+ * Punto de entrada del backend.
+ * Configura respuestas JSON, habilita CORS y carga el router principal de la API.
+ */
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');

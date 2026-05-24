@@ -1,4 +1,8 @@
 <?php
+/*
+ * Modelo de tareas.
+ * Representa la tabla tasks y permite crear/listar tareas por curso.
+ */
 require_once __DIR__ . '/baseModel.php';
 
 class TaskModel extends BaseModel {

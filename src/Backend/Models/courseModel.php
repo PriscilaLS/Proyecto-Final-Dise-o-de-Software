@@ -1,4 +1,8 @@
 <?php
+/*
+ * Modelo de cursos.
+ * Representa la tabla courses y consultas relacionadas con cursos de profesores/estudiantes.
+ */
 require_once __DIR__ . '/baseModel.php';
 
 class CourseModel extends BaseModel {

@@ -1,6 +1,12 @@
 <?php
+/*
+ * Middleware de autenticacion y autorizacion.
+ * Valida tokens JWT y comprueba roles antes de permitir acciones protegidas.
+ */
+require_once __DIR__ . '/../config.php';
+
 class AuthMiddleware {
-    private static string $secret = 'TU_SECRET_KEY_CAMBIALA';
+    private static string $secret = Config::JWT_SECRET;
 
     public static function handle(): array {
         $headers = getallheaders();

@@ -1,4 +1,8 @@
 <?php
+/*
+ * Modelo de entregas.
+ * Representa la tabla submissions y consulta entregas con datos del estudiante.
+ */
 require_once __DIR__ . '/baseModel.php';
 
 class SubmissionModel extends BaseModel {

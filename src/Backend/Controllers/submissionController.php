@@ -1,5 +1,10 @@
 <?php
+/*
+ * Controlador de entregas.
+ * Recibe ZIPs de proyectos, lista entregas de una tarea y permite descargar archivos enviados.
+ */
 require_once __DIR__ . '/../Services/submissionService.php';
+require_once __DIR__ . '/../Repositories/submissionRepository.php';
 require_once __DIR__ . '/../Middleware/authMiddleware.php';
 
 class SubmissionController {
@@ -37,6 +42,21 @@ class SubmissionController {
 
         try {
             $submissions = $this->submissionService->getSubmissionsByTask($taskId, $payload);
+            http_response_code(200);
+            echo json_encode($submissions);
+        } catch (Exception $e) {
+            http_response_code(403);
+            echo json_encode(['error' => $e->getMessage()]);
+        }
+    }
+
+    public function getMineByTask(int $taskId): void {
+        $payload = AuthMiddleware::handle();
+        AuthMiddleware::requireRole($payload, 'student');
+
+        try {
+            $submissionRepo = new SubmissionRepository();
+            $submissions = $submissionRepo->findByTaskAndStudent($taskId, (int) $payload['id']);
             http_response_code(200);
             echo json_encode($submissions);
         } catch (Exception $e) {

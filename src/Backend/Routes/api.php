@@ -1,4 +1,8 @@
 <?php
+/*
+ * Router principal de la API REST.
+ * Lee el metodo HTTP y la ruta solicitada para enviar la peticion al controlador correcto.
+ */
 require_once __DIR__ . '/../Controllers/authController.php';
 require_once __DIR__ . '/../Controllers/courseController.php';
 require_once __DIR__ . '/../Controllers/taskController.php';
@@ -17,6 +21,14 @@ $authController = new AuthController();
 $courseController = new CourseController();
 $taskController = new TaskController();
 $submissionController = new SubmissionController();
+
+if ($method === 'GET' && str_ends_with($path, '/my-submissions')) {
+    $parts = explode('/', trim($path, '/'));
+    if (count($parts) === 3 && $parts[0] === 'tasks' && is_numeric($parts[1])) {
+        $submissionController->getMineByTask((int) $parts[1]);
+        return;
+    }
+}
 
 // Este archivo funciona como router: recibe metodo + URL y llama
 // al controlador que sabe manejar esa accion.

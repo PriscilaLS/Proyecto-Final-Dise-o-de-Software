@@ -1,4 +1,8 @@
 <?php
+/*
+ * Controlador de cursos.
+ * Maneja crear cursos, listar cursos del usuario y matricular estudiantes con codigo.
+ */
 require_once __DIR__ . '/../Services/courseService.php';
 require_once __DIR__ . '/../Middleware/authMiddleware.php';
 

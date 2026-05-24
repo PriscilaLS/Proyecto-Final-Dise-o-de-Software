@@ -1,6 +1,11 @@
 <?php
+/*
+ * Servicio de autenticacion.
+ * Registra usuarios, genera llaves RSA, valida credenciales y emite tokens JWT.
+ */
 require_once __DIR__ . '/../Models/userModel.php';
 require_once __DIR__ . '/certificateService.php';
+require_once __DIR__ . '/../config.php';
 
 class AuthService {
     private UserModel $userModel;
@@ -60,7 +65,7 @@ class AuthService {
     }
 
     private function generateJWT(array $user): string {
-    $secret  = 'TU_SECRET_KEY_CAMBIALA';
+    $secret  = Config::JWT_SECRET;
     $header  = rtrim(strtr(base64_encode(
         json_encode(['alg' => 'HS256', 'typ' => 'JWT'])
     ), '+/', '-_'), '=');

@@ -1,4 +1,8 @@
 <?php
+/*
+ * Servicio de certificados.
+ * Genera pares de llaves RSA para entregar una clave privada al usuario registrado.
+ */
 class CertificateService {
     public function generateKeyPair(): array {
         $config = [

@@ -27,6 +27,14 @@ Si el usuario de MySQL no es `root`, actualizar credenciales en:
 src/Backend/Database/connection.php
 ```
 
+Tambien se debe cambiar el secreto JWT antes de publicar:
+
+```text
+src/Backend/config.php
+```
+
+El valor recomendado debe ser largo, privado y distinto al usado en desarrollo.
+
 ## Publicacion del proyecto
 
 Copiar el proyecto a:

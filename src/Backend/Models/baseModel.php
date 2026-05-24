@@ -1,4 +1,8 @@
 <?php
+/*
+ * Modelo base.
+ * Provee acceso comun a la conexion PDO y busquedas reutilizables para otros modelos.
+ */
 require_once __DIR__ . '/../Database/connection.php';
 abstract class BaseModel {
     public PDO $db;

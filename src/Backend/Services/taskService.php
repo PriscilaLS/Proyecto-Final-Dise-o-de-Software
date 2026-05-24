@@ -1,4 +1,8 @@
 <?php
+/*
+ * Servicio de tareas.
+ * Aplica permisos para listar o crear tareas dentro de cursos.
+ */
 require_once __DIR__ . '/../Repositories/taskRepository.php';
 
 class TaskService {

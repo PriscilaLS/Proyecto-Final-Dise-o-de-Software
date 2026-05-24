@@ -171,6 +171,23 @@ Respuesta 200:
 
 ---
 
+### GET /tasks/{id}/my-submissions
+Header: Authorization: Bearer {token}  (solo student)
+
+Respuesta 200:
+[
+  {
+    "id": 1,
+    "task_id": 1,
+    "student_id": 2,
+    "file_path": "Submissions/task_1_student_2_20260524_012704.zip",
+    "submitted_at": "2026-05-14 10:30:00",
+    "is_late": false
+  }
+]
+
+---
+
 ### GET /submissions/{id}/download
 Header: Authorization: Bearer {token}  (solo teacher)
 

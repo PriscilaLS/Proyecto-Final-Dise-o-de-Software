@@ -1,4 +1,8 @@
 <?php
+/*
+ * Controlador de autenticacion.
+ * Recibe peticiones de registro/login, valida datos basicos y delega la logica a AuthService.
+ */
 require_once __DIR__ . '/../Services/authService.php';
 
 class AuthController {
