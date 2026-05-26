@@ -1,9 +1,8 @@
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
-using ClientLocal.Services;
 
-namespace ClientLocal.Helpers;
+namespace ClientLocal.Controls;
 
 public class ClipboardGuard
 {
@@ -48,7 +47,7 @@ public class ClipboardGuard
                 var owner = TopLevel.GetTopLevel(_editor) as Window;
                 if (owner != null)
                 {
-                    ErrorService.GetInstance().ShowError(
+                    _ = AlertDialog.Show(
                         owner,
                         "Pegado externo no permitido",
                         "Esta aplicación solo permite pegar texto que hayas copiado dentro del editor. " +

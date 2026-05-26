@@ -13,7 +13,9 @@ public partial class IntegrityWarningDialog : Window
         Corrupt,   
         External,  
     }
-
+    
+    public IntegrityWarningDialog() : this(Mode.Corrupt) { }
+    
     public IntegrityWarningDialog(Mode mode = Mode.Corrupt)
     {
         InitializeComponent();

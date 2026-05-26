@@ -9,3 +9,13 @@ src/Backend/debug.txt
 # Uploaded submissions are runtime data, not source code.
 src/Backend/Submissions/*
 !src/Backend/Submissions/.gitkeep
+
+# macOS
+.DS_Store
+
+# IDE
+.idea/
+
+# Zips y logs
+*.zip
+run.log

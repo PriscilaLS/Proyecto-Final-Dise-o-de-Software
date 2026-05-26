@@ -1,4 +1,4 @@
-namespace ClientLocal.Services;
+namespace ClientLocal.Services.Editor;
 
 public interface IProjectService
 {

@@ -3,7 +3,7 @@ using System.IO;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
-using ClientLocal.Services;
+using ClientLocal.Models;
 
 namespace ClientLocal.Views;
 
@@ -16,7 +16,7 @@ public partial class TextInputDialog : Window
         
     }
 
-    public TextInputDialog(string title, string label, bool projectMode = false)
+    public TextInputDialog(string title, string label, bool projectMode = false, string initialValue = "")
     {
         InitializeComponent();
 
@@ -24,6 +24,7 @@ public partial class TextInputDialog : Window
 
         Title = title;
         Label.Text = label;
+        Entry.Text = initialValue; // nuevo
 
         DirectoryPanel.IsVisible = projectMode;
 
@@ -38,7 +39,7 @@ public partial class TextInputDialog : Window
 
         BrowseBtn.Click += OnBrowse;
     }
-
+    
     private async void OnBrowse(object? sender, RoutedEventArgs e)
     {
         var folders = await StorageProvider.OpenFolderPickerAsync(

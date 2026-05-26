@@ -1,0 +1,497 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="ClientLocal.Views.EditorView"
+        x:CompileBindings="False"
+        Title="EduIDE"
+        Width="1200" Height="750"
+        MinWidth="800" MinHeight="500"
+        Background="#181818"
+        FontFamily="Menlo,Consolas,monospace">
+
+  <Window.Styles>
+
+    <Style Selector="ScrollViewer /template/ ScrollBar">
+      <Setter Property="Width" Value="6"/>
+      <Setter Property="Background" Value="Transparent"/>
+    </Style>
+    <Style Selector="ScrollViewer /template/ ScrollBar /template/ Track /template/ Thumb">
+      <Setter Property="Background" Value="#333"/>
+    </Style>
+
+    <Style Selector="MenuItem">
+      <Setter Property="Foreground" Value="#666"/>
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="FontFamily" Value="Menlo,Consolas,monospace"/>
+      <Setter Property="FontSize" Value="12"/>
+      <Setter Property="Padding" Value="10,4"/>
+    </Style>
+    <Style Selector="MenuItem:pointerover">
+      <Setter Property="Foreground" Value="#cccccc"/>
+      <Setter Property="Background" Value="#2a2a2a"/>
+    </Style>
+    <Style Selector="MenuItem:selected">
+      <Setter Property="Foreground" Value="#cccccc"/>
+      <Setter Property="Background" Value="#2a2a2a"/>
+    </Style>
+    <Style Selector="MenuItem > Popup > Border">
+      <Setter Property="Background" Value="#1e1e1e"/>
+      <Setter Property="BorderBrush" Value="#2a2a2a"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="CornerRadius" Value="8"/>
+    </Style>
+
+    <Style Selector="TreeView">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="BorderThickness" Value="0"/>
+    </Style>
+    <Style Selector="TreeViewItem">
+      <Setter Property="Foreground" Value="#555"/>
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="FontFamily" Value="Menlo,Consolas,monospace"/>
+      <Setter Property="FontSize" Value="12"/>
+      <Setter Property="Padding" Value="4,5"/>
+      <Setter Property="Margin" Value="0,1"/>
+    </Style>
+    <Style Selector="TreeViewItem TreeViewItem:pointerover /template/ ContentPresenter">
+      <Setter Property="Background" Value="#2a2a2a"/>
+      <Setter Property="TextElement.Foreground" Value="#aaaaaa"/>
+    </Style>
+    <Style Selector="TreeView > TreeViewItem:pointerover /template/ ContentPresenter">
+      <Setter Property="Background" Value="#2a2a2a"/>
+      <Setter Property="TextElement.Foreground" Value="#9ece6a"/>
+    </Style>
+    
+    <Style Selector="TreeViewItem:selected /template/ ContentPresenter">
+      <Setter Property="Background" Value="#2a2a2a"/>
+      <Setter Property="TextElement.Foreground" Value="#7dcfff"/>
+    </Style>
+    
+    <Style Selector="TreeViewItem:selected">
+      <Setter Property="Background" Value="Transparent"/>
+    </Style>
+    
+    <Style Selector="TreeViewItem:selected /template/ Border">
+      <Setter Property="Background" Value="#2a2a2a"/>
+    </Style>
+
+    <Style Selector="Button.project-btn">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Padding" Value="0"/>
+      <Setter Property="Cursor" Value="Hand"/>
+    </Style>
+    <Style Selector="Button.project-btn:pointerover /template/ ContentPresenter">
+      <Setter Property="Background" Value="#3a3a3a"/>
+      <Setter Property="CornerRadius" Value="4"/>
+    </Style>
+    <Style Selector="TreeViewItem:pointerover Button.project-btn /template/ ContentPresenter">
+      <Setter Property="Background" Value="Transparent"/>
+    </Style>
+
+    <Style Selector="TextBox">
+      <Setter Property="Background" Value="#242424"/>
+      <Setter Property="Foreground" Value="#d4d4d4"/>
+      <Setter Property="BorderBrush" Value="#242424"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="CaretBrush" Value="#7dcfff"/>
+      <Setter Property="SelectionBrush" Value="#264f78"/>
+    </Style>
+    
+    <Style Selector="TextBox:focus">
+      <Setter Property="Background" Value="#242424"/>
+      <Setter Property="Foreground" Value="#d4d4d4"/>
+      <Setter Property="BorderBrush" Value="#242424"/>
+    </Style>
+    
+    <Style Selector="TextBox /template/ Border">
+      <Setter Property="Background" Value="#242424"/>
+      <Setter Property="BorderBrush" Value="Transparent"/>
+      <Setter Property="BorderThickness" Value="0"/>
+    </Style>
+    
+    <Style Selector="TextBox:focus /template/ Border">
+      <Setter Property="Background" Value="#242424"/>
+      <Setter Property="BorderBrush" Value="Transparent"/>
+      <Setter Property="BorderThickness" Value="0"/>
+    </Style>
+
+    <Style Selector="Button.panel-close">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="Foreground" Value="#444"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Padding" Value="4,0"/>
+      <Setter Property="FontSize" Value="12"/>
+      <Setter Property="Cursor" Value="Hand"/>
+    </Style>
+    <Style Selector="Button.panel-close:pointerover">
+      <Setter Property="Foreground" Value="#aaaaaa"/>
+      <Setter Property="Background" Value="Transparent"/>
+    </Style>
+
+    <Style Selector="Button.sidebar-btn">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Padding" Value="6"/>
+      <Setter Property="Width" Value="32"/>
+      <Setter Property="Height" Value="32"/>
+      <Setter Property="CornerRadius" Value="6"/>
+      <Setter Property="Cursor" Value="Hand"/>
+    </Style>
+    <Style Selector="Button.sidebar-btn:pointerover /template/ ContentPresenter">
+      <Setter Property="Background" Value="#2a2a2a"/>
+      <Setter Property="CornerRadius" Value="6"/>
+    </Style>
+    <Style Selector="Button.sidebar-btn.active /template/ ContentPresenter">
+      <Setter Property="Background" Value="#1f2937"/>
+      <Setter Property="CornerRadius" Value="6"/>
+    </Style>
+
+    <Style Selector="Button.tab-btn">
+      <Setter Property="Background" Value="#2a2a2a"/>
+      <Setter Property="Foreground" Value="#888"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="CornerRadius" Value="7"/>
+      <Setter Property="Padding" Value="14,6"/>
+      <Setter Property="Cursor" Value="Hand"/>
+      <Setter Property="FontFamily" Value="Menlo,Consolas,monospace"/>
+      <Setter Property="FontSize" Value="12"/>
+    </Style>
+    <Style Selector="Button.tab-btn:pointerover">
+      <Setter Property="Background" Value="#333"/>
+      <Setter Property="Foreground" Value="#ccc"/>
+    </Style>
+    <Style Selector="Button.tab-btn.tab-active">
+      <Setter Property="Background" Value="#1f2937"/>
+      <Setter Property="Foreground" Value="#93c5fd"/>
+    </Style>
+    <Style Selector="Button.tab-close">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Padding" Value="0,0,0,2"/>
+      <Setter Property="FontSize" Value="10"/>
+      <Setter Property="Foreground" Value="#666"/>
+      <Setter Property="Cursor" Value="Hand"/>
+      <Setter Property="VerticalAlignment" Value="Center"/>
+    </Style>
+    <Style Selector="Button.tab-close:pointerover">
+      <Setter Property="Foreground" Value="#f87171"/>
+    </Style>
+
+  </Window.Styles>
+
+  <Window.Resources>
+    <x:Double x:Key="ConsoleLastHeight">180</x:Double>
+    <x:Double x:Key="ExplorerLastWidth">210</x:Double>
+  </Window.Resources>
+
+  <DockPanel Background="#181818">
+
+    <!-- ─── Barra superior (menú + run) ─── -->
+    <Border DockPanel.Dock="Top"
+            Background="#181818"
+            BorderBrush="#2a2a2a"
+            BorderThickness="0,0,0,1"
+            Padding="6,0">
+      <Grid>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="*"/>
+          <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <Menu Grid.Column="0" Background="Transparent">
+          <MenuItem Header="Archivo">
+            <MenuItem Header="Nuevo Proyecto"  Name="NewProjectMenu"/>
+            <MenuItem Header="Abrir Proyecto"  Name="OpenProjectMenu"/>
+            <Separator Margin="0,4" Background="#2a2a2a" Height="1"/>
+            <MenuItem Header="Nuevo Script"    Name="NewScriptMenu"/>
+            <MenuItem Header="Nueva Carpeta"   Name="NewFolderMenu"/>
+            <MenuItem Header="Guardar Script"  Name="SaveScriptMenu"/>
+          </MenuItem>
+        </Menu>
+        <Button Grid.Column="1"
+                Name="RunScriptBtn"
+                Classes="run-btn"
+                ToolTip.Tip="Correr Script"
+                VerticalAlignment="Center"
+                Margin="0,0,6,0">
+          <Image Source="avares://ClientLocal/Assets/run.png"
+                 Width="18" Height="18"/>
+        </Button>
+      </Grid>
+    </Border>
+
+    <!-- ─── Cuerpo principal ─── -->
+    <Grid Name="RootGrid" Margin="12,10,12,12">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="36"/>
+        <ColumnDefinition Width="*"/>
+      </Grid.ColumnDefinitions>
+      <Grid.RowDefinitions>
+        <RowDefinition Height="*" MinHeight="80"/>
+        <RowDefinition Height="10"/>
+        <RowDefinition Height="180" MinHeight="60"/>
+      </Grid.RowDefinitions>
+
+      <!-- ─── Barra lateral (abarca todas las filas) ─── -->
+      <Border Grid.Column="0"
+              Grid.Row="0"
+              Grid.RowSpan="3"
+              Background="#181818"
+              Padding="2,8">
+        <DockPanel HorizontalAlignment="Center">
+
+          <!-- Botón consola anclado al fondo -->
+          <Button DockPanel.Dock="Bottom"
+                  Name="SidebarConsoleBtn"
+                  Classes="sidebar-btn"
+                  ToolTip.Tip="Consola">
+            <Image Source="avares://ClientLocal/Assets/console.png"
+                   Width="18" Height="18"/>
+          </Button>
+
+          <!-- Botones superiores -->
+          <StackPanel Spacing="4">
+            <Button Name="SidebarExplorerBtn"
+                    Classes="sidebar-btn"
+                    ToolTip.Tip="Explorador">
+              <Image Source="avares://ClientLocal/Assets/folder.png"
+                     Width="18" Height="18"/>
+            </Button>
+            <Button Name="SidebarHomeBtn"
+                    Classes="sidebar-btn"
+                    ToolTip.Tip="Home">
+              <Image Source="avares://ClientLocal/Assets/home.png"
+                     Width="18" Height="18"/>
+            </Button>
+          </StackPanel>
+
+        </DockPanel>
+      </Border>
+
+      <!-- ─── Contenido superior (explorador + editor) ─── -->
+      <Grid Grid.Column="1" Grid.Row="0" Name="TopGrid">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="210" MinWidth="120"/>
+          <ColumnDefinition Width="10"/>
+          <ColumnDefinition Width="*" MinWidth="200"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- ─── Explorador ─── -->
+        <Border Name="ExplorerPanel"
+                Grid.Column="0"
+                Background="#242424"
+                CornerRadius="10">
+          <DockPanel>
+            <Border DockPanel.Dock="Top"
+                    Padding="14,8,8,8">
+              <Grid>
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="*"/>
+                  <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0"
+                           Text="PROYECTO"
+                           Foreground="#444"
+                           FontFamily="Menlo,Consolas,monospace"
+                           FontSize="10"
+                           LetterSpacing="1.5"
+                           VerticalAlignment="Center"/>
+                <Button Grid.Column="1"
+                        Name="CloseExplorerBtn"
+                        Classes="panel-close"
+                        Content="✕"
+                        ToolTip.Tip="Cerrar explorador"/>
+              </Grid>
+            </Border>
+            <TreeView Name="TreeExplorer"
+                      Margin="4,0,4,8"
+                      Background="Transparent"
+                      Foreground="#555"/>
+          </DockPanel>
+        </Border>
+
+        <!-- ─── Splitter horizontal ─── -->
+        <GridSplitter Name="HSplitter"
+                      Grid.Column="1"
+                      ResizeDirection="Columns"
+                      ResizeBehavior="PreviousAndNext"
+                      Background="Transparent"
+                      Width="10"
+                      Cursor="SizeWestEast"
+                      ZIndex="10"/>
+
+        <!-- ─── Editor ─── -->
+        <Border Grid.Column="2"
+                Background="#242424"
+                CornerRadius="10"
+                ClipToBounds="True"
+                IsHitTestVisible="True">
+          <DockPanel>
+            <ScrollViewer DockPanel.Dock="Top"
+                          HorizontalScrollBarVisibility="Auto"
+                          VerticalScrollBarVisibility="Disabled"
+                          Background="Transparent"
+                          Padding="10,6,10,0">
+              <StackPanel Name="TabsPanel"
+                          Orientation="Horizontal"
+                          Spacing="4"/>
+            </ScrollViewer>
+            <Grid>
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+              </Grid.ColumnDefinitions>
+              <ScrollViewer Grid.Column="0"
+                            Name="LineNumberScroller"
+                            VerticalScrollBarVisibility="Hidden"
+                            HorizontalScrollBarVisibility="Disabled"
+                            Background="#1e1e1e"
+                            Width="40">
+                <TextBlock Name="LineNumbers"
+                           FontFamily="Menlo,Consolas,monospace"
+                           FontSize="13.5"
+                           Foreground="#555"
+                           TextAlignment="Center"
+                           Padding="8,16,8,16"
+                           LineHeight="20"
+                           Text="1"/>
+              </ScrollViewer>
+              <TextBox Grid.Column="1"
+                       Name="TextEditor"
+                       AcceptsReturn="True"
+                       AcceptsTab="True"
+                       Background="Transparent"
+                       Focusable="True"
+                       Foreground="#d4d4d4"
+                       FontFamily="Menlo, Consolas, monospace"
+                       FontSize="13.5"
+                       LineHeight="20"
+                       Padding="20,16"
+                       TextWrapping="NoWrap"
+                       VerticalContentAlignment="Top"/>
+              <Border Name="EmptyEditorPlaceholder"
+                      Grid.Column="2"
+                      Background="Transparent"
+                      IsVisible="False">
+                <Grid HorizontalAlignment="Center"
+                      VerticalAlignment="Center">
+                  <StackPanel HorizontalAlignment="Center"
+                              VerticalAlignment="Center"
+                              Spacing="6">
+                    <TextBlock Text="EduIde"
+                               FontSize="48"
+                               Foreground="#888"
+                               FontFamily="Menlo, Consolas, monospace"
+                               FontWeight="Bold"
+                               HorizontalAlignment="Center"/>
+                    <TextBlock Text="Escribe tu lógica"
+                               FontSize="14"
+                               Foreground="#666"
+                               HorizontalAlignment="Center"/>
+                  </StackPanel>
+                </Grid>
+              </Border>
+            </Grid>
+          </DockPanel>
+        </Border>
+      </Grid>
+
+      <!-- ─── Splitter vertical ─── -->
+      <GridSplitter Name="VSplitter"
+                    Grid.Column="1"
+                    Grid.Row="1"
+                    ResizeDirection="Rows"
+                    ResizeBehavior="PreviousAndNext"
+                    Background="Transparent"
+                    Height="10"
+                    HorizontalAlignment="Stretch"
+                    Cursor="SizeNorthSouth"/>
+
+      <!-- ─── Consola ─── -->
+      <Border Name="ConsolePanel"
+              Grid.Column="1"
+              Grid.Row="2"
+              Background="#242424"
+              CornerRadius="10">
+        <DockPanel>
+
+          <Border DockPanel.Dock="Top"
+                  Padding="14,8,8,8"
+                  BorderBrush="#2a2a2a"
+                  BorderThickness="0,0,0,1">
+            <Grid>
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+              </Grid.ColumnDefinitions>
+              <Ellipse Grid.Column="0"
+                       Width="6" Height="6" Fill="#9ece6a"
+                       VerticalAlignment="Center"
+                       Margin="0,0,8,0"/>
+              <TextBlock Grid.Column="1"
+                         Text="Consola"
+                         Foreground="#444"
+                         FontFamily="Menlo,Consolas,monospace"
+                         FontSize="10"
+                         LetterSpacing="1"
+                         VerticalAlignment="Center"/>
+              <StackPanel Grid.Column="2"
+                          Orientation="Horizontal"
+                          Spacing="4">
+                <Button Name="ClearConsoleBtn"
+                        Classes="panel-close"
+                        Content="⌫"
+                        ToolTip.Tip="Limpiar consola"/>
+                <Button Name="StopScriptBtn"
+                        Classes="panel-close"
+                        Content="■"
+                        ToolTip.Tip="Detener script"
+                        Foreground="#f87171"/>
+                <Button Name="CloseConsoleBtn"
+                        Classes="panel-close"
+                        Content="✕"
+                        ToolTip.Tip="Cerrar consola"/>
+              </StackPanel>
+            </Grid>
+          </Border>
+
+          <Border DockPanel.Dock="Bottom"
+                  BorderBrush="#2a2a2a"
+                  BorderThickness="0,1,0,0"
+                  Padding="8,6">
+            <Grid>
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+              </Grid.ColumnDefinitions>
+              <TextBlock Grid.Column="0"
+                         Text="›"
+                         Foreground="#9ece6a"
+                         FontFamily="Menlo,Consolas,monospace"
+                         FontSize="13"
+                         VerticalAlignment="Center"
+                         Margin="0,0,8,0"/>
+              <TextBox Grid.Column="1"
+                       Name="ConsoleInput"
+                       Background="Transparent"
+                       Foreground="#d4d4d4"
+                       FontFamily="Menlo,Consolas,monospace"
+                       FontSize="12"
+                       BorderThickness="0"
+                       Padding="0"
+                       CaretBrush="#7dcfff"
+                       IsEnabled="False"/>
+            </Grid>
+          </Border>
+
+          <ScrollViewer Name="ConsoleScroller" Padding="0">
+            <ItemsControl Name="ConsoleOutput"
+                          Margin="14,10"/>
+          </ScrollViewer>
+
+        </DockPanel>
+      </Border>
+
+    </Grid>
+  </DockPanel>
+</Window>

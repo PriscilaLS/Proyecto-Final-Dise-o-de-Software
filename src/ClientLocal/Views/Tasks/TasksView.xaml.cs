@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
+using Avalonia.Controls;
+using Avalonia.Interactivity;
 using ClientLocal.Models.Courses;
 using ClientLocal.Models.Tasks;
 using ClientLocal.Services.Api;

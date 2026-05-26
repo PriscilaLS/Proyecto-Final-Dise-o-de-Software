@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 
-namespace ClientLocal.Services;
+namespace ClientLocal.Services.Editor;
 
 public class FileIntegrityService : IIntegrityService
 {
@@ -107,5 +107,18 @@ public class FileIntegrityService : IIntegrityService
         );
         Directory.CreateDirectory(bakFolder);
         return Path.Combine(bakFolder, name + ".bak");
+    }
+
+    public void MoveBackup(string oldPath, string newPath)
+    {
+        string oldBak = GetBakPath(oldPath);
+        string newBak = GetBakPath(newPath);
+        if(File.Exists(oldBak))
+            File.Move(oldBak, newBak);
+    }
+
+    public void MarkAsCorrupt(string filePath)
+    {
+        File.WriteAllText(GetSigPath(filePath), "CORRUPT");
     }
 }

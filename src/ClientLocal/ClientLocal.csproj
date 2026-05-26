@@ -19,4 +19,23 @@
     </PackageReference>
     <AvaloniaResource Include="Assets/**" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Views\Dialogs\IntegrityWarningDialog.axaml.cs">
+      <DependentUpon>IntegrityWarningDialog.axaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Views\Dialogs\TextInputDialog.axaml.cs">
+      <DependentUpon>TextInputDialog.axaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Views\Editor\EditorView.axaml.cs">
+      <DependentUpon>EditorView.axaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Views/Courses/CoursesView.xaml.cs" />
+    <Compile Remove="Views/Tasks/TasksView.xaml.cs" />
+  </ItemGroup>
 </Project>

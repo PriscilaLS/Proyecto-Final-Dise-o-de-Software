@@ -6,7 +6,7 @@ using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 
-namespace ClientLocal.Helpers;
+namespace ClientLocal.Controls;
 
 public static class WarningDialogViewBuilder
 {

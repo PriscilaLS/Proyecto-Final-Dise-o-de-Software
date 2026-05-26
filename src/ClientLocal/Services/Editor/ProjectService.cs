@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 
-namespace ClientLocal.Services;
+namespace ClientLocal.Services.Editor;
 
 public class ProjectService : IProjectService
 {

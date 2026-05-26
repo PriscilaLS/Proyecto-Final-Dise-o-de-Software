@@ -7,8 +7,8 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using ClientLocal.Models.Tasks;
-using ClientLocal.Services;
 using ClientLocal.Services.Api;
+using ClientLocal.Services.Editor;
 using ClientLocal.Services.Files;
 using ClientLocal.Services.Session;
 

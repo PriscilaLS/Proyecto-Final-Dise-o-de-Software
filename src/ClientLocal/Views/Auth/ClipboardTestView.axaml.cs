@@ -2,7 +2,7 @@ using System;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
-using ClientLocal.Helpers;
+using ClientLocal.Controls;
 
 namespace ClientLocal.Views.Auth
 {

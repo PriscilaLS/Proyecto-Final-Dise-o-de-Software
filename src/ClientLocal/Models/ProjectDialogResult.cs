@@ -1,4 +1,4 @@
-namespace ClientLocal.Services;
+namespace ClientLocal.Models;
 
 public class ProjectDialogResult
 {
