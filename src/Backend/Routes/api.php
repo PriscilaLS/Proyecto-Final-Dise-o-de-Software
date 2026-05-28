@@ -23,38 +23,29 @@ $submissionController = new SubmissionController();
 
 // Este archivo funciona como router: recibe metodo + URL y llama
 // al controlador que sabe manejar esa accion.
-match(true) {
-    // Rutas de autenticación
-    $method === 'POST' && $path === '/auth/register' 
-        => $authController->register(),
-    $method === 'POST' && $path === '/auth/login'    
-        => $authController->login(),
-
-    // Cursos
-    $method === 'POST' && $path === '/courses' 
-        => $courseController->create(),    
-    $method === 'GET' && ($path === '/courses/me' || $path === '/courses/mine')
-        => $courseController->getMyCourses(),
-    $method === 'POST' && $path === '/courses/join' 
-        => $courseController->join(),
-
-    // Tareas
-    $method === 'GET' && preg_match('#^/courses/(\d+)/tasks$#', $path, $matches)
-        => $taskController->getByCourse((int) $matches[1]),
-    $method === 'POST' && preg_match('#^/courses/(\d+)/tasks$#', $path, $matches)
-        => $taskController->create((int) $matches[1]),
-
-    // Entregas
-    $method === 'POST' && preg_match('#^/tasks/(\d+)/submit$#', $path, $matches)
-        => $submissionController->submit((int) $matches[1]),
-    $method === 'GET' && preg_match('#^/tasks/(\d+)/submissions$#', $path, $matches)
-        => $submissionController->getByTask((int) $matches[1]),
-    $method === 'GET' && preg_match('#^/tasks/(\d+)/my-submissions$#', $path, $matches)
-        => $submissionController->getMineByTask((int) $matches[1]),
-    $method === 'GET' && preg_match('#^/submissions/(\d+)/download$#', $path, $matches)
-        => $submissionController->download((int) $matches[1]),
-    default => (function() {
-        http_response_code(404);
-        echo json_encode(['error' => 'Ruta no encontrada']);
-    })()
-};
+if ($method === 'POST' && $path === '/auth/register') {
+    $authController->register();
+} elseif ($method === 'POST' && $path === '/auth/login') {
+    $authController->login();
+} elseif ($method === 'POST' && $path === '/courses') {
+    $courseController->create();
+} elseif ($method === 'GET' && ($path === '/courses/me' || $path === '/courses/mine')) {
+    $courseController->getMyCourses();
+} elseif ($method === 'POST' && $path === '/courses/join') {
+    $courseController->join();
+} elseif ($method === 'GET' && preg_match('#^/courses/(\d+)/tasks$#', $path, $matches)) {
+    $taskController->getByCourse((int) $matches[1]);
+} elseif ($method === 'POST' && preg_match('#^/courses/(\d+)/tasks$#', $path, $matches)) {
+    $taskController->create((int) $matches[1]);
+} elseif ($method === 'POST' && preg_match('#^/tasks/(\d+)/submit$#', $path, $matches)) {
+    $submissionController->submit((int) $matches[1]);
+} elseif ($method === 'GET' && preg_match('#^/tasks/(\d+)/submissions$#', $path, $matches)) {
+    $submissionController->getByTask((int) $matches[1]);
+} elseif ($method === 'GET' && preg_match('#^/tasks/(\d+)/my-submissions$#', $path, $matches)) {
+    $submissionController->getMineByTask((int) $matches[1]);
+} elseif ($method === 'GET' && preg_match('#^/submissions/(\d+)/download$#', $path, $matches)) {
+    $submissionController->download((int) $matches[1]);
+} else {
+    http_response_code(404);
+    echo json_encode(['error' => 'Ruta no encontrada']);
+}

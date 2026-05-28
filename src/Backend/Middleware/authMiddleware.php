@@ -14,7 +14,7 @@ class AuthMiddleware {
         // Las rutas protegidas esperan: Authorization: Bearer {token}.
         $authHeader = $headers['Authorization'] ?? $headers['authorization'] ?? '';
 
-        if (!str_starts_with($authHeader, 'Bearer ')) {
+        if (substr($authHeader, 0, 7) !== 'Bearer ') {
             http_response_code(401);
             echo json_encode(['error' => 'Token requerido']);
             exit();
