@@ -1,7 +1,7 @@
 <?php
 /*
  * Controlador de tareas.
- * Maneja la creacion de tareas por curso y la consulta de tareas disponibles.
+ * Maneja la creación de tareas por curso y la consulta de tareas disponibles.
  */
 require_once __DIR__ . '/../Services/taskService.php';
 require_once __DIR__ . '/../Middleware/authMiddleware.php';
@@ -14,7 +14,7 @@ class TaskController {
     }
 
     public function getByCourse(int $courseId): void {
-        // Primero se valida el JWT. Sin token valido, AuthMiddleware corta la respuesta.
+        // Primero se valida el JWT. Sin token válido, AuthMiddleware corta la respuesta.
         $payload = AuthMiddleware::handle();
 
         try {
@@ -36,7 +36,7 @@ class TaskController {
         $data = json_decode(file_get_contents('php://input'), true);
         if (!$data || !isset($data['title'], $data['due_date'])) {
             http_response_code(400);
-            echo json_encode(['error' => 'Titulo y fecha limite son requeridos']);
+            echo json_encode(['error' => 'Título y fecha límite son requeridos']);
             return;
         }
 

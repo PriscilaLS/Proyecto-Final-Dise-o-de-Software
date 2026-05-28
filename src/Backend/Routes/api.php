@@ -2,6 +2,7 @@
 /*
  * Router principal de la API REST.
  * Lee el metodo HTTP y la ruta solicitada para enviar la peticion al controlador correcto.
+ * Esta version usa if/elseif para ser compatible con PHP 7.4 en Ubuntu 20.04.
  */
 require_once __DIR__ . '/../Controllers/authController.php';
 require_once __DIR__ . '/../Controllers/courseController.php';
@@ -9,26 +10,16 @@ require_once __DIR__ . '/../Controllers/taskController.php';
 require_once __DIR__ . '/../Controllers/submissionController.php';
 
 $method = $_SERVER['REQUEST_METHOD'];
-$path   = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+$path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
 // Apache entrega la URL completa. Quitamos el prefijo para comparar solo
 // la ruta de la API, por ejemplo: /courses/me.
 $path = str_replace('/ProyectoFinalDS/src/Backend/app.php', '', $path);
 
-
-
 $authController = new AuthController();
 $courseController = new CourseController();
 $taskController = new TaskController();
 $submissionController = new SubmissionController();
-
-if ($method === 'GET' && str_ends_with($path, '/my-submissions')) {
-    $parts = explode('/', trim($path, '/'));
-    if (count($parts) === 3 && $parts[0] === 'tasks' && is_numeric($parts[1])) {
-        $submissionController->getMineByTask((int) $parts[1]);
-        return;
-    }
-}
 
 // Este archivo funciona como router: recibe metodo + URL y llama
 // al controlador que sabe manejar esa accion.
@@ -58,6 +49,8 @@ match(true) {
         => $submissionController->submit((int) $matches[1]),
     $method === 'GET' && preg_match('#^/tasks/(\d+)/submissions$#', $path, $matches)
         => $submissionController->getByTask((int) $matches[1]),
+    $method === 'GET' && preg_match('#^/tasks/(\d+)/my-submissions$#', $path, $matches)
+        => $submissionController->getMineByTask((int) $matches[1]),
     $method === 'GET' && preg_match('#^/submissions/(\d+)/download$#', $path, $matches)
         => $submissionController->download((int) $matches[1]),
     default => (function() {

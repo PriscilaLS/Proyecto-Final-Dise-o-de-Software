@@ -1,19 +1,19 @@
 <?php
 /*
  * Modelo base.
- * Provee acceso comun a la conexion PDO y busquedas reutilizables para otros modelos.
+ * Provee acceso común a la conexión PDO y búsquedas reutilizables para otros modelos.
  */
 require_once __DIR__ . '/../Database/connection.php';
 abstract class BaseModel {
     public PDO $db;
     public function __construct() {
-        // Todos los modelos comparten la misma conexion PDO.
+        // Todos los modelos comparten la misma conexión PDO.
         $this->db = Connection::getInstance();
     }
 
     abstract public function getTableName(): string;
     public function findById(int $id): ?array {
-        // El ? es un parametro preparado: evita concatenar valores del usuario en SQL.
+        // El ? es un parámetro preparado: evita concatenar valores del usuario en SQL.
         $stmt = $this->db->prepare("SELECT * FROM " . $this->getTableName() . " WHERE id = ?");
         $stmt->execute([$id]);
         return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;

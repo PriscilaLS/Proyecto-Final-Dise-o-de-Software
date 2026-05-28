@@ -1,6 +1,6 @@
 <?php
 /*
- * Middleware de autenticacion y autorizacion.
+ * Middleware de autenticación y autorización.
  * Valida tokens JWT y comprueba roles antes de permitir acciones protegidas.
  */
 require_once __DIR__ . '/../config.php';
@@ -22,7 +22,7 @@ class AuthMiddleware {
 
         $token = substr($authHeader, 7);
 
-        // Si el token es valido, aqui recuperamos id, role y exp del usuario.
+        // Si el token es válido, aqui recuperamos id, role y exp del usuario.
         $payload = self::validateJWT($token);
         if (!$payload) {
             http_response_code(401);

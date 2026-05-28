@@ -1,7 +1,7 @@
 <?php
 /*
  * Controlador de cursos.
- * Maneja crear cursos, listar cursos del usuario y matricular estudiantes con codigo.
+ * Maneja crear cursos, listar cursos del usuario y matricular estudiantes con código.
  */
 require_once __DIR__ . '/../Services/courseService.php';
 require_once __DIR__ . '/../Middleware/authMiddleware.php';
@@ -14,7 +14,7 @@ class CourseController {
     }
 
     public function create(): void {
-        // Crear cursos requiere token valido y rol teacher.
+        // Crear cursos requiere token válido y rol teacher.
         $payload = AuthMiddleware::handle();
         AuthMiddleware::requireRole($payload, 'teacher');
 
@@ -52,7 +52,7 @@ class CourseController {
     }
 
     public function join(): void {
-        // Solo estudiantes pueden matricularse con codigo de curso.
+        // Solo estudiantes pueden matricularse con código de curso.
         $payload = AuthMiddleware::handle();
         AuthMiddleware::requireRole($payload, 'student');
 

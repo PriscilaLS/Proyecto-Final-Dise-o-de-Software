@@ -1,7 +1,7 @@
 <?php
 /*
  * Repositorio de cursos.
- * Encapsula consultas de cursos, matriculas y validaciones de inscripcion.
+ * Encapsula consultas de cursos, matrículas y validaciones de inscripción.
  */
 require_once __DIR__ . '/baseRepository.php';
 require_once __DIR__ . '/../Models/courseModel.php';

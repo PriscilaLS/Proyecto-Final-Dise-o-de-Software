@@ -1,7 +1,7 @@
 <?php
 /*
  * Conexion centralizada a MySQL usando PDO.
- * Implementa una unica instancia reutilizable para que los modelos compartan la misma conexion.
+ * Implementa una única instancia reutilizable para que los modelos compartan la misma conexión.
  */
 class Connection {
     public static ?PDO $instance = null;

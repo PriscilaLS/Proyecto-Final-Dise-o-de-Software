@@ -3,7 +3,7 @@
  * Servicio de cursos.
  * Aplica reglas para crear cursos, listar cursos segun rol y unir estudiantes por codigo.
  */
-require_once __DIR__ . '/../Repositories/CourseRepository.php';
+require_once __DIR__ . '/../Repositories/courseRepository.php';
 
 class CourseService {
     private CourseRepository $courseRepo;
@@ -13,7 +13,7 @@ class CourseService {
     }
 
     public function createCourse(array $data, int $teacherId): array {
-        // join_code es el codigo que usa un estudiante para unirse al curso.
+        // join_code es el código que usa un estudiante para unirse al curso.
         $joinCode = $this->generateJoinCode();
         $courseId = $this->courseRepo->save([
             'name' => $data['name'],
@@ -32,7 +32,7 @@ class CourseService {
     }
 
     public function getMyCourses(int $userID, string $role): array {
-        // Teacher ve cursos que creo; student ve cursos donde esta matriculado.
+        // Teacher ve cursos que creó, student ve cursos donde está matriculado.
         if ($role === 'teacher') {
             return $this->courseRepo->findByTeacherId($userID);
         } else {
@@ -41,7 +41,7 @@ class CourseService {
     }
 
     public function joinCourse(string $joinCode, int $studentId): void {
-        // Busca el curso por codigo y evita matriculas duplicadas.
+        // Busca el curso por código y evita matriculas duplicadas.
         $course = $this->courseRepo->findByJoinCode($joinCode);
         if (!$course) {
             throw new Exception('Código de curso inválido');

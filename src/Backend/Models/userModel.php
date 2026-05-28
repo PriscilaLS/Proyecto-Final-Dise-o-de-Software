@@ -1,7 +1,7 @@
 <?php
 /*
  * Modelo de usuarios.
- * Representa la tabla users y contiene la insercion de nuevas cuentas.
+ * Representa la tabla users y contiene la inserción de nuevas cuentas.
  */
 require_once __DIR__ . '/baseModel.php';
 

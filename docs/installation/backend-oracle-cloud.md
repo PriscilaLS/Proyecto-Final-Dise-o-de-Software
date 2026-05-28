@@ -6,7 +6,7 @@
 - Apache, PHP, MySQL y extensiones `pdo_mysql` y `openssl`.
 - Puerto 80 abierto en la VCN/security list.
 
-## Instalacion base
+## Instalación base
 
 ```bash
 sudo apt update
@@ -27,15 +27,7 @@ Si el usuario de MySQL no es `root`, actualizar credenciales en:
 src/Backend/Database/connection.php
 ```
 
-Tambien se debe cambiar el secreto JWT antes de publicar:
-
-```text
-src/Backend/config.php
-```
-
-El valor recomendado debe ser largo, privado y distinto al usado en desarrollo.
-
-## Publicacion del proyecto
+## Publicación del proyecto
 
 Copiar el proyecto a:
 
@@ -46,7 +38,7 @@ Copiar el proyecto a:
 El endpoint principal queda:
 
 ```text
-http://IP_PUBLICA/ProyectoFinalDS/src/Backend/app.php
+http://141.148.68.5/ProyectoFinalDS/src/Backend/app.php
 ```
 
 ## Permisos para entregas
@@ -57,10 +49,10 @@ sudo chown -R www-data:www-data /var/www/html/ProyectoFinalDS/src/Backend/Submis
 sudo chmod -R 775 /var/www/html/ProyectoFinalDS/src/Backend/Submissions
 ```
 
-## Validacion rapida
+## Validacion rápida
 
 ```bash
-curl http://IP_PUBLICA/ProyectoFinalDS/src/Backend/app.php/courses/me
+curl http://141.148.68.5/ProyectoFinalDS/src/Backend/app.php/courses/me
 ```
 
 Respuesta esperada sin token:

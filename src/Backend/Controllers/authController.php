@@ -1,7 +1,7 @@
 <?php
 /*
- * Controlador de autenticacion.
- * Recibe peticiones de registro/login, valida datos basicos y delega la logica a AuthService.
+ * Controlador de autenticación.
+ * Recibe peticiones de registro/login, valida datos básicos y delega la lógica a AuthService.
  */
 require_once __DIR__ . '/../Services/authService.php';
 
@@ -49,7 +49,7 @@ class AuthController {
         }
 
         try {
-            // Si las credenciales son validas, el service devuelve token + user.
+            // Si las credenciales son válidas, el service devuelve token + user.
             $result = $this->authService->login($data);
             http_response_code(200);
             echo json_encode($result);

@@ -1,7 +1,7 @@
 # API Contracts
 
 Base URL local:   http://localhost/ProyectoFinalDS/src/Backend/app.php
-Base URL remota:  http://TU-IP-ORACLE/src/Backend/app.php
+Base URL remota:  http://141.148.68.5/ProyectoFinalDS/src/Backend/app.php
 
 ---
 

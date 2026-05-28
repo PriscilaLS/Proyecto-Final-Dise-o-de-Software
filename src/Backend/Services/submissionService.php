@@ -1,7 +1,7 @@
 <?php
 /*
  * Servicio de entregas.
- * Valida permisos, valida archivos ZIP, guarda entregas y calcula si fueron tardias.
+ * Valida permisos, valida archivos ZIP, guarda entregas y calcula si fueron tardías.
  */
 require_once __DIR__ . '/../Repositories/submissionRepository.php';
 
@@ -15,7 +15,7 @@ class SubmissionService {
     }
 
     public function submitProject(int $taskId, array $file, array $payload): array {
-        // Regla: el estudiante solo puede entregar tareas de cursos donde esta matriculado.
+        // Regla: el estudiante solo puede entregar tareas de cursos donde está matriculado.
         if (!$this->submissionRepo->studentIsEnrolledInTaskCourse($taskId, (int) $payload['id'])) {
             throw new Exception('No puedes entregar esta tarea');
         }
@@ -27,7 +27,7 @@ class SubmissionService {
 
         $this->validateZip($file);
 
-        // La carpeta Submissions guarda fisicamente los ZIPs enviados.
+        // La carpeta Submissions guarda fisícamente los ZIPs enviados.
         if (!is_dir($this->uploadDir)) {
             mkdir($this->uploadDir, 0775, true);
         }
@@ -64,12 +64,6 @@ class SubmissionService {
         }
 
         return $this->submissionRepo->findByTaskId($taskId);
-    }
-
-    public function getMySubmissionsByTask(int $taskId, array $payload): array {
-        // Para historial propio, el filtro importante es student_id.
-        // Aunque se consulte otra tarea, solo se devuelven entregas del usuario autenticado.
-        return $this->submissionRepo->findByTaskAndStudent($taskId, (int) $payload['id']);
     }
 
     public function getDownloadPath(int $submissionId, array $payload): string {
