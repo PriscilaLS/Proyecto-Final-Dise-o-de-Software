@@ -16,6 +16,7 @@
       <TextBox x:Name="EditorTextBox"
                Grid.Row="2"
                AcceptsReturn="True"
+               ContextMenu="{x:Null}"
                TextWrapping="Wrap"
                ScrollViewer.VerticalScrollBarVisibility="Auto"
                MinHeight="280"

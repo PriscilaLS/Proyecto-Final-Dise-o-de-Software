@@ -197,16 +197,23 @@
           <ColumnDefinition Width="*"/>
           <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
-        <Menu Grid.Column="0" Background="Transparent">
-          <MenuItem Header="Archivo">
-            <MenuItem Header="Nuevo Proyecto"  Name="NewProjectMenu"/>
-            <MenuItem Header="Abrir Proyecto"  Name="OpenProjectMenu"/>
-            <Separator Margin="0,4" Background="#2a2a2a" Height="1"/>
-            <MenuItem Header="Nuevo Script"    Name="NewScriptMenu"/>
-            <MenuItem Header="Nueva Carpeta"   Name="NewFolderMenu"/>
-            <MenuItem Header="Guardar Script"  Name="SaveScriptMenu"/>
-          </MenuItem>
-        </Menu>
+        <Button Grid.Column="0"
+                Content="Archivo"
+                HorizontalAlignment="Left"
+                Background="Transparent"
+                Foreground="#cccccc"
+                BorderThickness="0"
+                Padding="10,4">
+          <Button.Flyout>
+            <MenuFlyout>
+              <MenuItem Header="Nuevo Proyecto" Name="NewProjectMenu"/>
+              <MenuItem Header="Abrir Proyecto" Name="OpenProjectMenu"/>
+              <MenuItem Header="Nuevo Script" Name="NewScriptMenu"/>
+              <MenuItem Header="Nueva Carpeta" Name="NewFolderMenu"/>
+              <MenuItem Header="Guardar Script" Name="SaveScriptMenu"/>
+            </MenuFlyout>
+          </Button.Flyout>
+        </Button>
         <Button Grid.Column="1"
                 Name="RunScriptBtn"
                 Classes="run-btn"
@@ -359,6 +366,7 @@
                        Name="TextEditor"
                        AcceptsReturn="True"
                        AcceptsTab="True"
+                       ContextMenu="{x:Null}"
                        Background="Transparent"
                        Focusable="True"
                        Foreground="#d4d4d4"

@@ -559,7 +559,7 @@ ID: 1
 "submitted_at":"2026-05-28 22:34:14"}
 ```
 
-**Estado:** ARPOBADO
+**Estado:** APROBADO
 
 ---
 
@@ -771,7 +771,7 @@ curl -X POST "http://141.148.68.5/ProyectoFinalDS/src/Backend/app.php/tasks/TASK
 
 **Por qué es útil**
 
-Confirma que estudiantes no pueden ver entregas de todos los estudiantes.
+Confirma que no pueden ver entregas de todos los estudiantes.
 
 **Comando**
 ```bash

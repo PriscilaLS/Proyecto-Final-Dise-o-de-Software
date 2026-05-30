@@ -109,6 +109,7 @@ public partial class EditorView : Window
         TreeExplorer.SelectionChanged += OnFileSelected;
 
         _clipboardGuard = new ClipboardGuard(TextEditor);
+        TextEditor.ContextFlyout = CreateClipboardMenu(_clipboardGuard);
 
         // Auto indentación
         TextEditor.KeyUp += (_, e) =>
@@ -320,6 +321,26 @@ public partial class EditorView : Window
     }
 
     // ── Explorador ────
+
+    private MenuFlyout CreateClipboardMenu(ClipboardGuard guard)
+    {
+        var menu = new MenuFlyout();
+
+        var cut = new MenuItem { Header = "Cortar" };
+        cut.Click += (_, _) => guard.CutSelection();
+
+        var copy = new MenuItem { Header = "Copiar" };
+        copy.Click += (_, _) => guard.CopySelection();
+
+        var paste = new MenuItem { Header = "Pegar" };
+        paste.Click += (_, _) => guard.PasteInternalOrWarn();
+
+        menu.Items.Add(cut);
+        menu.Items.Add(copy);
+        menu.Items.Add(paste);
+
+        return menu;
+    }
 
     private void ToggleExplorer()
     {
@@ -622,7 +643,7 @@ public partial class EditorView : Window
 
         if (!_consoleOpen) ExpandConsole();
 
-        AppendConsoleLine($"\n{GetShellPrompt()} python3 {_currentFilePath}\n", false);
+        AppendConsoleLine($"\n{GetShellPrompt()} python {_currentFilePath}\n", false);
         ConsoleInput.Focus();
 
         await _executionService.RunAsync(_currentFilePath, (text, isError) =>

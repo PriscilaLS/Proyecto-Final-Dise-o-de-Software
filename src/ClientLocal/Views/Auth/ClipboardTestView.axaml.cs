@@ -24,6 +24,7 @@ namespace ClientLocal.Views.Auth
             if (_editorTextBox != null)
             {
                 _clipboardGuard = new ClipboardGuard(_editorTextBox);
+                _editorTextBox.ContextFlyout = CreateClipboardMenu(_clipboardGuard);
             }
 
             if (_statusTextBlock != null)
@@ -36,6 +37,26 @@ namespace ClientLocal.Views.Auth
         private void InitializeComponent()
         {
             AvaloniaXamlLoader.Load(this);
+        }
+
+        private MenuFlyout CreateClipboardMenu(ClipboardGuard guard)
+        {
+            var menu = new MenuFlyout();
+
+            var cut = new MenuItem { Header = "Cortar" };
+            cut.Click += (_, _) => guard.CutSelection();
+
+            var copy = new MenuItem { Header = "Copiar" };
+            copy.Click += (_, _) => guard.CopySelection();
+
+            var paste = new MenuItem { Header = "Pegar" };
+            paste.Click += (_, _) => guard.PasteInternalOrWarn();
+
+            menu.Items.Add(cut);
+            menu.Items.Add(copy);
+            menu.Items.Add(paste);
+
+            return menu;
         }
 
         private void BackButton_Click(object? sender, RoutedEventArgs e)

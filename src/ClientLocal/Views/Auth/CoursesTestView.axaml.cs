@@ -18,6 +18,7 @@ namespace ClientLocal.Views.Auth
         private TextBlock? _statusTextBlock;
 
         public event Action<CourseDto>? CourseSelected;
+        public event Action? IdeRequested;
 
         public CoursesTestView(SessionService sessionService)
         {
@@ -77,6 +78,11 @@ namespace ClientLocal.Views.Auth
             }
 
             CourseSelected?.Invoke(selectedCourse);
+        }
+
+        private void OpenIdeButton_Click(object? sender, RoutedEventArgs e)
+        {
+            IdeRequested?.Invoke();
         }
 
         private List<CourseDto> GetMockCourses()

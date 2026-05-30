@@ -10,19 +10,18 @@ namespace ClientLocal.Views;
 public partial class MainWindow : Window
 {
     private SessionService? _sessionService;
+    private CourseDto? _currentCourse;
 
     public MainWindow()
     {
-        Title    = "EduIDE";
-        Width    = 1280;
-        Height   = 800;
+        Title = "EduIDE";
+        Width = 1280;
+        Height = 800;
         MinWidth = 800;
         MinHeight = 600;
 
         ShowLogin();
     }
-
-    // ── Login ─────────
 
     private void ShowLogin()
     {
@@ -35,11 +34,8 @@ public partial class MainWindow : Window
         };
 
         login.RegisterRequested += ShowRegister;
-
         Content = login;
     }
-
-    // ── Register ────────
 
     private void ShowRegister()
     {
@@ -48,34 +44,58 @@ public partial class MainWindow : Window
         Content = register;
     }
 
-    // ── Courses ────
-
     private void ShowCourses()
     {
         var courses = new CoursesTestView(_sessionService!);
-
-        courses.CourseSelected += (course) => ShowTasks(course);
-
+        courses.CourseSelected += ShowTasks;
+        courses.IdeRequested += OpenIdeWindow;
         Content = courses;
     }
 
-    // ── Tasks ────
+    private void OpenIdeWindow()
+    {
+        var editor = new EditorView();
+        editor.HomeRequested += () => editor.Close();
+        editor.Show();
+    }
 
     private void ShowTasks(CourseDto course)
     {
+        _currentCourse = course;
+
         var tasks = new TasksTestView(_sessionService!, course);
-
-        tasks.SubmitRequested += (task) => ShowEditor(task);
-
+        tasks.SubmitRequested += ShowSubmit;
         Content = tasks;
     }
 
-    // ── Editor ────
-
-    private void ShowEditor(TaskDto task)
+    private void ShowSubmit(TaskDto task)
     {
-        var editor = new EditorView();
-        editor.HomeRequested += ShowCourses;
-        Content = editor;
+        var submit = new SubmitTestView(_sessionService!, task);
+
+        submit.BackRequested += () =>
+        {
+            if (_currentCourse != null)
+                ShowTasks(_currentCourse);
+            else
+                ShowCourses();
+        };
+
+        submit.ClipboardTestRequested += ShowClipboardTest;
+        Content = submit;
+    }
+
+    private void ShowClipboardTest()
+    {
+        var clipboardTest = new ClipboardTestView();
+
+        clipboardTest.BackRequested += () =>
+        {
+            if (_currentCourse != null)
+                ShowTasks(_currentCourse);
+            else
+                ShowCourses();
+        };
+
+        Content = clipboardTest;
     }
 }

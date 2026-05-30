@@ -25,7 +25,7 @@ public class PythonExecutionService : IExecutionService
         {
             StartInfo = new ProcessStartInfo
             {
-                FileName = "python3",
+                FileName = "python",
                 ArgumentList = { "-u", "-i" },
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
@@ -42,19 +42,21 @@ public class PythonExecutionService : IExecutionService
     public async Task RunAsync(string filePath, Action<string, bool> onOutput)
     {
         _onOutput = onOutput;
+        string safePath = filePath.Replace("\\", "/").Replace("'", "\\'");
+        string command = $"exec(open('{safePath}', encoding='utf-8').read())";
         
         if (IsRunning)
         {
             _process!.StandardInput.WriteLine();
             await Task.Delay(50);
-            _process!.StandardInput.WriteLine($"exec(open('{filePath}').read())");
+            _process!.StandardInput.WriteLine(command);
             _process!.StandardInput.Flush();
             return;
         }
         
         await StartReplAsync(onOutput);
         await Task.Delay(200);
-        _process!.StandardInput.WriteLine($"exec(open('{filePath}').read())");
+        _process!.StandardInput.WriteLine(command);
         _process!.StandardInput.Flush();
     }
 
