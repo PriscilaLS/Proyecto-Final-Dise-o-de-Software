@@ -21,13 +21,14 @@ class AuthService
         ]);
     }
 
-    public function register(string $name, string $email, string $password)
+    public function register(string $name, string $email, string $password, string $role)
     {
         return $this->client->post('/auth/register', [
 
             'name' => $name,
             'email' => $email,
-            'password' => $password
+            'password' => $password,
+            'role' => $role
 
         ]);
     }

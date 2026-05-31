@@ -3,11 +3,11 @@
 require_once 'Components/BasePage.php';
 require_once 'Services/CourseService.php';
 
-class CreateCoursePage extends BasePage
+class JoinCoursePage extends BasePage
 {
     protected function getTitle(): string
     {
-        return "Crear Curso";
+        return "Unirse a Curso";
     }
 
     protected function renderContent(): string
@@ -15,28 +15,24 @@ class CreateCoursePage extends BasePage
         $message = "";
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $name = $_POST['name'] ?? '';
-            $description = $_POST['description'] ?? '';
-
+            $joinCode = $_POST['join_code'] ?? '';
             $service = new CourseService();
-            $response = $service->createCourse($name, $description);
+            $response = $service->joinCourse($joinCode);
 
             if (isset($response['error'])) {
                 $message = "<p class='error'>{$response['error']}</p>";
             } else {
-                $joinCode = htmlspecialchars($response['join_code'] ?? '', ENT_QUOTES, 'UTF-8');
-                $message = "<p class='success'>Curso creado correctamente. Codigo: {$joinCode}</p>";
+                $message = "<p class='success'>{$response['message']}</p>";
             }
         }
 
         return "
         <div class='card'>
-            <h1>Crear Curso</h1>
+            <h1>Unirse a Curso</h1>
             {$message}
             <form method='POST'>
-                <input type='text' name='name' placeholder='Nombre del curso' required>
-                <textarea name='description' placeholder='Descripcion' required></textarea>
-                <button type='submit'>Crear Curso</button>
+                <input type='text' name='join_code' placeholder='Codigo del curso' required>
+                <button type='submit'>Unirse</button>
             </form>
             <a class='back-link' href='index.php?page=courses'>Volver a cursos</a>
         </div>
