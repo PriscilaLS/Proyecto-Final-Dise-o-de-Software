@@ -3,45 +3,68 @@
              xmlns:models="clr-namespace:ClientLocal.Models.Courses"
              x:Class="ClientLocal.Views.Auth.CoursesTestView">
   <Border Padding="24">
-    <Grid RowDefinitions="Auto,*,Auto">
+    <Grid RowDefinitions="Auto,Auto,Auto,*,Auto">
       <TextBlock Text="Cursos matriculados"
                  FontSize="24"
                  FontWeight="Bold"
                  Margin="0,0,0,16"/>
 
+      <StackPanel Grid.Row="1"
+                  Orientation="Horizontal"
+                  Spacing="10"
+                  Margin="0,0,0,16">
+        <TextBox x:Name="JoinCodeTextBox"
+                 Width="260"
+                 Watermark="Código del curso"/>
+        <Button Content="Unirse al curso"
+                Width="150"
+                Click="JoinCourseButton_Click"/>
+      </StackPanel>
+
+      <StackPanel Grid.Row="2"
+                  Orientation="Horizontal"
+                  Spacing="10"
+                  Margin="0,0,0,16">
+        <Button Content="Ver tareas del curso"
+                Width="170"
+                Click="OpenTasksButton_Click"/>
+        <Button Content="Abrir IDE"
+                Width="130"
+                Click="OpenIdeButton_Click"/>
+        <Button Content="Demo Decorator"
+                Width="150"
+                Click="OpenDecoratorButton_Click"/>
+      </StackPanel>
+
       <ListBox x:Name="CoursesListBox"
-               Grid.Row="1">
+               Grid.Row="3">
         <ListBox.ItemTemplate>
           <DataTemplate x:DataType="models:CourseDto">
-            <StackPanel Margin="0,0,0,10">
-              <TextBlock Text="{Binding Name}" FontWeight="Bold"/>
-              <TextBlock Text="{Binding Description}" Opacity="0.8"/>
-            </StackPanel>
+            <Border Margin="0,0,0,10"
+                    Padding="12"
+                    Background="#111827"
+                    CornerRadius="10">
+              <StackPanel>
+                <TextBlock Text="{Binding Name}"
+                           FontWeight="Bold"
+                           FontSize="16"/>
+                <TextBlock Text="{Binding Description}"
+                           Margin="0,6,0,0"
+                           TextWrapping="Wrap"/>
+                <TextBlock Text="{Binding JoinCode, StringFormat='Código: {0}'}"
+                           Margin="0,6,0,0"
+                           Foreground="LightGray"/>
+              </StackPanel>
+            </Border>
           </DataTemplate>
         </ListBox.ItemTemplate>
       </ListBox>
 
-      <StackPanel Grid.Row="2" Spacing="10" Margin="0,16,0,0">
-        <TextBlock x:Name="StatusTextBlock" Foreground="Red" TextWrapping="Wrap"/>
-        <StackPanel Orientation="Horizontal" Spacing="10">
-          <TextBox x:Name="JoinCodeTextBox"
-                   Width="220"
-                   PlaceholderText="Codigo del curso"/>
-          <Button Content="Unirse al curso"
-                  Width="150"
-                  Click="JoinCourseButton_Click"/>
-        </StackPanel>
-        <StackPanel Orientation="Horizontal" Spacing="10">
-          <Button Content="Ver tareas del curso"
-                  Width="170"
-                  HorizontalAlignment="Left"
-                  Click="OpenTasksButton_Click"/>
-          <Button Content="Abrir IDE"
-                  Width="120"
-                  HorizontalAlignment="Left"
-                  Click="OpenIdeButton_Click"/>
-        </StackPanel>
-      </StackPanel>
+      <TextBlock x:Name="StatusTextBlock"
+                 Grid.Row="4"
+                 Margin="0,16,0,0"
+                 Foreground="Orange"
+                 TextWrapping="Wrap"/>
     </Grid>
   </Border>
 </UserControl>

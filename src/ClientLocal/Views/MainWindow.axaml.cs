@@ -4,6 +4,7 @@ using ClientLocal.Models.Courses;
 using ClientLocal.Models.Tasks;
 using ClientLocal.Services.Session;
 using ClientLocal.Views.Auth;
+using ClientLocal.Views.Decorator;
 
 namespace ClientLocal.Views;
 
@@ -49,6 +50,7 @@ public partial class MainWindow : Window
         var courses = new CoursesTestView(_sessionService!);
         courses.CourseSelected += ShowTasks;
         courses.IdeRequested += OpenIdeWindow;
+        courses.DecoratorRequested += OpenDecoratorDemo;
         Content = courses;
     }
 
@@ -57,6 +59,12 @@ public partial class MainWindow : Window
         var editor = new EditorView();
         editor.HomeRequested += () => editor.Close();
         editor.Show();
+    }
+
+    private void OpenDecoratorDemo()
+    {
+        var demo = new DecoratorHostWindow();
+        demo.Show();
     }
 
     private void ShowTasks(CourseDto course)

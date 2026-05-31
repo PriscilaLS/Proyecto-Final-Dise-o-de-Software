@@ -20,6 +20,7 @@ namespace ClientLocal.Views.Auth
 
         public event Action<CourseDto>? CourseSelected;
         public event Action? IdeRequested;
+        public event Action? DecoratorRequested;
 
         public CoursesTestView(SessionService sessionService)
         {
@@ -123,6 +124,11 @@ namespace ClientLocal.Views.Auth
         private void OpenIdeButton_Click(object? sender, RoutedEventArgs e)
         {
             IdeRequested?.Invoke();
+        }
+
+        private void OpenDecoratorButton_Click(object? sender, RoutedEventArgs e)
+        {
+            DecoratorRequested?.Invoke();
         }
     }
 }
