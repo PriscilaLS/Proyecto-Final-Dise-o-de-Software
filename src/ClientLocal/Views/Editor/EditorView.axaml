@@ -342,6 +342,16 @@
                           Orientation="Horizontal"
                           Spacing="4"/>
             </ScrollViewer>
+            <Border DockPanel.Dock="Top"
+                    Padding="14,5,14,5"
+                    BorderBrush="#2a2a2a"
+                    BorderThickness="0,1,0,0">
+              <TextBlock Name="SignatureStatusText"
+                         Text="● Sin firma"
+                         Foreground="#666666"
+                         FontFamily="Menlo,Consolas,monospace"
+                         FontSize="11"/>
+            </Border>
             <Grid>
               <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>

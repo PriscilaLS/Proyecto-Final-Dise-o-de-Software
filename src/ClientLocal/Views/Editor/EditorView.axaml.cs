@@ -11,6 +11,7 @@ using Avalonia.Platform.Storage;
 using ClientLocal.Controls;
 using ClientLocal.Models;
 using ClientLocal.Services.Editor;
+using ClientLocal.Decorator;
 
 namespace ClientLocal.Views;
 
@@ -60,6 +61,7 @@ public partial class EditorView : Window
         TextEditor.IsVisible = false;
         LineNumberScroller.IsVisible = false;
         EmptyEditorPlaceholder.IsVisible = true;
+        SignatureStatusText.IsVisible = false;
 
         _explorerService = new ExplorerService(
             TreeExplorer,
@@ -690,6 +692,7 @@ public partial class EditorView : Window
     {
         var tab = _tabService.Open(fullPath, content);
         SetActiveTab(tab);
+        UpdateSignatureStatus(fullPath, content);
     }
 
     private void CloseTab(EditorTabService.EditorTab tab)
@@ -707,6 +710,7 @@ public partial class EditorView : Window
             TextEditor.IsVisible             = false;
             LineNumberScroller.IsVisible     = false;
             EmptyEditorPlaceholder.IsVisible = true;
+            SignatureStatusText.IsVisible = false;
         }
     }
 
@@ -790,5 +794,19 @@ public partial class EditorView : Window
             tabBtn.Content = panel;
             TabsPanel.Children.Add(tabBtn);
         }
+    }
+    private void UpdateSignatureStatus(string filePath, string content)
+    {
+        SignatureStatusText.IsVisible = true;
+        
+        var script = new BasicScript(filePath, content);
+        var signed = new SignedScriptDecorator(script);
+
+        (SignatureStatusText.Text, SignatureStatusText.Foreground) = signed.VerifySignature() switch
+        {
+            SignatureStatus.Valid   => ("● Firma válida",   new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.Parse("#9ece6a"))),
+            SignatureStatus.Invalid => ("● Firma inválida", new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.Parse("#f87171"))),
+            _                      => ("● Sin firma",       new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.Parse("#666666")))
+        };
     }
 }
