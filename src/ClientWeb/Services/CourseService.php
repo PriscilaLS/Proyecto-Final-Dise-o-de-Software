@@ -25,4 +25,11 @@ class CourseService
 
         ], true);
     }
+
+    public function joinCourse($joinCode)
+    {
+        return $this->client->post('/courses/join', [
+            'join_code' => $joinCode
+        ], true);
+    }
 }
