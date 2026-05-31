@@ -668,6 +668,10 @@ public partial class EditorView : Window
 
         File.WriteAllText(_currentFilePath, content);
         _integrityService.Sign(_currentFilePath, content);
+        
+        //decorator
+        new SignedScriptDecorator(new BasicScript(_currentFilePath, content)).Sign();
+        UpdateSignatureStatus(_currentFilePath, content);
     }
 
     private async void OnRunScript(object? sender, RoutedEventArgs e)
