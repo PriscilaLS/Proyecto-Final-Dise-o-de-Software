@@ -48,6 +48,9 @@ public class ExplorerService
         if (onNewScript != null) _onNewScript = onNewScript;
 
         _treeView.Items.Clear();
+        if (!Directory.Exists(folder))
+            return;
+
         var rootNode = new TreeViewItem
         {
             Header  = CreateProjectHeader(folder),
@@ -69,14 +72,34 @@ public class ExplorerService
 
     private void AddNodes(TreeViewItem parent, string folder)
     {
-        foreach (var dir in Directory.GetDirectories(folder))
+        if (!Directory.Exists(folder))
+            return;
+
+        string[] directories;
+        string[] pythonFiles;
+
+        try
+        {
+            directories = Directory.GetDirectories(folder);
+            pythonFiles = Directory.GetFiles(folder, "*.py");
+        }
+        catch (IOException)
+        {
+            return;
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return;
+        }
+
+        foreach (var dir in directories)
         {
             var dirNode = new TreeViewItem { Header = CreateFolderHeader(dir), Tag = dir };
             AddNodes(dirNode, dir);
             AddDragDrop(dirNode);
             parent.Items.Add(dirNode);
         }
-        foreach (var file in Directory.GetFiles(folder, "*.py"))
+        foreach (var file in pythonFiles)
         {
             var fileNode = new TreeViewItem { Header = CreateFileHeader(file), Tag = file };
             AddDragDrop(fileNode);

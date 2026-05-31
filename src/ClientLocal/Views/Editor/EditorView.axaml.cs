@@ -313,7 +313,8 @@ public partial class EditorView : Window
                     else if (result == "cancel")
                     { }
                 });
-            }
+            },
+            onProjectStructureChanged: RefreshExplorerFromWatcher
         );
         
         _ = _executionService.StartReplAsync((text, isError) => AppendConsoleLine(text, isError));
@@ -321,6 +322,37 @@ public partial class EditorView : Window
     }
 
     // ── Explorador ────
+
+    private void RefreshExplorerFromWatcher()
+    {
+        Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+        {
+            try
+            {
+                string? projectPath = _projectService.CurrentProjectPath;
+                if (string.IsNullOrWhiteSpace(projectPath))
+                    return;
+
+                if (!Directory.Exists(projectPath))
+                {
+                    _watcherService.Stop();
+                    TreeExplorer.Items.Clear();
+                    AppendConsoleLine("El proyecto fue movido, renombrado o eliminado fuera de EduIDE.\n", true);
+                    return;
+                }
+
+                _explorerService.Show(
+                    projectPath,
+                    onNewFolder: () => OnNewFolder(null, new RoutedEventArgs()),
+                    onNewScript: () => OnNewScript(null, new RoutedEventArgs())
+                );
+            }
+            catch (Exception ex)
+            {
+                AppendConsoleLine($"Error al actualizar el explorador: {ex.Message}\n", true);
+            }
+        });
+    }
 
     private MenuFlyout CreateClipboardMenu(ClipboardGuard guard)
     {

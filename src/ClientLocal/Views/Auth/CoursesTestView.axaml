@@ -24,6 +24,14 @@
       <StackPanel Grid.Row="2" Spacing="10" Margin="0,16,0,0">
         <TextBlock x:Name="StatusTextBlock" Foreground="Red" TextWrapping="Wrap"/>
         <StackPanel Orientation="Horizontal" Spacing="10">
+          <TextBox x:Name="JoinCodeTextBox"
+                   Width="220"
+                   PlaceholderText="Codigo del curso"/>
+          <Button Content="Unirse al curso"
+                  Width="150"
+                  Click="JoinCourseButton_Click"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Spacing="10">
           <Button Content="Ver tareas del curso"
                   Width="170"
                   HorizontalAlignment="Left"

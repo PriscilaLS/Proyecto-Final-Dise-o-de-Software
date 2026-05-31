@@ -42,22 +42,36 @@ public class PythonExecutionService : IExecutionService
     public async Task RunAsync(string filePath, Action<string, bool> onOutput)
     {
         _onOutput = onOutput;
-        string safePath = filePath.Replace("\\", "/").Replace("'", "\\'");
-        string command = $"exec(open('{safePath}', encoding='utf-8').read())";
-        
-        if (IsRunning)
+
+        using var runProcess = new Process
         {
-            _process!.StandardInput.WriteLine();
-            await Task.Delay(50);
-            _process!.StandardInput.WriteLine(command);
-            _process!.StandardInput.Flush();
-            return;
-        }
-        
-        await StartReplAsync(onOutput);
-        await Task.Delay(200);
-        _process!.StandardInput.WriteLine(command);
-        _process!.StandardInput.Flush();
+            StartInfo = new ProcessStartInfo
+            {
+                FileName = "python",
+                ArgumentList = { filePath },
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            }
+        };
+
+        runProcess.OutputDataReceived += (_, e) =>
+        {
+            if (e.Data != null)
+                onOutput(e.Data + Environment.NewLine, false);
+        };
+
+        runProcess.ErrorDataReceived += (_, e) =>
+        {
+            if (e.Data != null)
+                onOutput(e.Data + Environment.NewLine, true);
+        };
+
+        runProcess.Start();
+        runProcess.BeginOutputReadLine();
+        runProcess.BeginErrorReadLine();
+        await runProcess.WaitForExitAsync();
     }
 
     private void StartReading()

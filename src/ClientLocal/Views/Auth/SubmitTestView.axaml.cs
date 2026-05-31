@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
@@ -105,22 +106,28 @@ namespace ClientLocal.Views.Auth
 
                 if (!isValid)
                 {
-                    SetError($"Archivo con firma inválida: {Path.GetFileName(file)}");
+                    SetError($"Archivo con firma invalida: {Path.GetFileName(file)}");
                     return;
                 }
             }
 
-            SetSuccess("Validación correcta. Todas las firmas son válidas.");
+            SetSuccess("Validacion correcta. Todas las firmas son validas.");
         }
 
         private async void SubmitButton_Click(object? sender, RoutedEventArgs e)
         {
             ResetMessages();
+            if (sender is Button submitButton)
+                submitButton.IsEnabled = false;
 
             var projectPath = _projectPathTextBox?.Text?.Trim() ?? string.Empty;
 
             if (!ValidateProjectFolder(projectPath, out var pythonFiles))
+            {
+                if (sender is Button invalidButton)
+                    invalidButton.IsEnabled = true;
                 return;
+            }
 
             foreach (var file in pythonFiles)
             {
@@ -129,14 +136,21 @@ namespace ClientLocal.Views.Auth
 
                 if (!isValid)
                 {
-                    SetError($"No se puede enviar. Firma inválida en: {Path.GetFileName(file)}");
+                    SetError($"No se puede enviar. Firma invalida en: {Path.GetFileName(file)}");
+                    if (sender is Button invalidSignatureButton)
+                        invalidSignatureButton.IsEnabled = true;
                     return;
                 }
             }
 
+            string? zipPath = null;
+
             try
             {
-                var zipPath = _compressionService.CreateProjectZip(projectPath);
+                SetSuccess("Preparando ZIP para la entrega...");
+                zipPath = await Task.Run(() => _compressionService.CreateProjectZip(projectPath));
+
+                SetSuccess("Enviando entrega al backend...");
                 var response = await _submissionRepository.SubmitProjectAsync(_task.Id, zipPath);
 
                 if (!string.IsNullOrWhiteSpace(response.Error))
@@ -150,15 +164,29 @@ namespace ClientLocal.Views.Auth
                     _resultTextBlock.Text =
                         $"Entrega registrada.\n\n" +
                         $"ID: {response.Id}\n" +
-                        $"Tardía: {response.IsLate}\n" +
+                        $"Tardia: {response.IsLate}\n" +
                         $"Fecha: {response.SubmittedAt}";
                 }
 
                 SetSuccess("Entrega enviada correctamente.");
             }
+            catch (TaskCanceledException)
+            {
+                SetError("Error al enviar la entrega: el backend no respondio a tiempo.");
+            }
             catch (Exception ex)
             {
                 SetError($"Error al enviar la entrega: {ex.Message}");
+            }
+            finally
+            {
+                if (!string.IsNullOrWhiteSpace(zipPath))
+                {
+                    try { File.Delete(zipPath); } catch { }
+                }
+
+                if (sender is Button finalButton)
+                    finalButton.IsEnabled = true;
             }
         }
 
@@ -178,7 +206,7 @@ namespace ClientLocal.Views.Auth
 
             if (string.IsNullOrWhiteSpace(projectPath) || !Directory.Exists(projectPath))
             {
-                SetError("Selecciona una carpeta válida.");
+                SetError("Selecciona una carpeta valida.");
                 return false;
             }
 

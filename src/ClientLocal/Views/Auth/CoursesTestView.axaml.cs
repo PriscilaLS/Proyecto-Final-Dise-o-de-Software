@@ -15,6 +15,7 @@ namespace ClientLocal.Views.Auth
         private readonly CourseRepository _courseRepository;
 
         private ListBox? _coursesListBox;
+        private TextBox? _joinCodeTextBox;
         private TextBlock? _statusTextBlock;
 
         public event Action<CourseDto>? CourseSelected;
@@ -28,6 +29,7 @@ namespace ClientLocal.Views.Auth
             _courseRepository = new CourseRepository(ApiClientFactory.Create(_sessionService));
 
             _coursesListBox = this.FindControl<ListBox>("CoursesListBox");
+            _joinCodeTextBox = this.FindControl<TextBox>("JoinCodeTextBox");
             _statusTextBlock = this.FindControl<TextBlock>("StatusTextBlock");
 
             Loaded += CoursesTestView_Loaded;
@@ -40,6 +42,11 @@ namespace ClientLocal.Views.Auth
 
         private async void CoursesTestView_Loaded(object? sender, RoutedEventArgs e)
         {
+            await LoadCoursesAsync();
+        }
+
+        private async System.Threading.Tasks.Task LoadCoursesAsync()
+        {
             if (_statusTextBlock != null)
                 _statusTextBlock.Text = string.Empty;
 
@@ -47,13 +54,8 @@ namespace ClientLocal.Views.Auth
             {
                 var courses = await _courseRepository.GetEnrolledCoursesAsync();
 
-                if (courses.Count == 0)
-                {
-                    courses = GetMockCourses();
-
-                    if (_statusTextBlock != null)
-                        _statusTextBlock.Text = "No hay cursos reales matriculados. Mostrando cursos de prueba.";
-                }
+                if (courses.Count == 0 && _statusTextBlock != null)
+                    _statusTextBlock.Text = "No hay cursos matriculados.";
 
                 if (_coursesListBox != null)
                     _coursesListBox.ItemsSource = courses;
@@ -61,10 +63,48 @@ namespace ClientLocal.Views.Auth
             catch (Exception ex)
             {
                 if (_statusTextBlock != null)
-                    _statusTextBlock.Text = $"No se pudieron cargar cursos reales. Mostrando cursos de prueba. Detalle: {ex.Message}";
+                    _statusTextBlock.Text = $"No se pudieron cargar los cursos. Detalle: {ex.Message}";
 
                 if (_coursesListBox != null)
-                    _coursesListBox.ItemsSource = GetMockCourses();
+                    _coursesListBox.ItemsSource = new List<CourseDto>();
+            }
+        }
+
+        private async void JoinCourseButton_Click(object? sender, RoutedEventArgs e)
+        {
+            var joinCode = _joinCodeTextBox?.Text?.Trim() ?? string.Empty;
+
+            if (string.IsNullOrWhiteSpace(joinCode))
+            {
+                if (_statusTextBlock != null)
+                    _statusTextBlock.Text = "Ingresa el codigo del curso.";
+                return;
+            }
+
+            if (sender is Button joinButton)
+                joinButton.IsEnabled = false;
+
+            try
+            {
+                var message = await _courseRepository.JoinCourseAsync(joinCode);
+
+                if (_statusTextBlock != null)
+                    _statusTextBlock.Text = message;
+
+                if (_joinCodeTextBox != null)
+                    _joinCodeTextBox.Text = string.Empty;
+
+                await LoadCoursesAsync();
+            }
+            catch (Exception ex)
+            {
+                if (_statusTextBlock != null)
+                    _statusTextBlock.Text = ex.Message;
+            }
+            finally
+            {
+                if (sender is Button finalButton)
+                    finalButton.IsEnabled = true;
             }
         }
 
@@ -83,27 +123,6 @@ namespace ClientLocal.Views.Auth
         private void OpenIdeButton_Click(object? sender, RoutedEventArgs e)
         {
             IdeRequested?.Invoke();
-        }
-
-        private List<CourseDto> GetMockCourses()
-        {
-            return new List<CourseDto>
-            {
-                new CourseDto
-                {
-                    Id = 101,
-                    Name = "Diseño de Software",
-                    Description = "Curso de prueba para navegación",
-                    JoinCode = "MOCK101"
-                },
-                new CourseDto
-                {
-                    Id = 102,
-                    Name = "Programación Python",
-                    Description = "Curso temporal de ejemplo",
-                    JoinCode = "MOCK102"
-                }
-            };
         }
     }
 }
