@@ -22,6 +22,7 @@ public partial class EditorView : Window
     private double _consoleLastHeight  = 180;
     private bool   _explorerOpen       = true;
     private bool   _consoleOpen        = true;
+    private bool _handlingCorruption = false;
 
     private RowDefinition    ConsoleRow  => RootGrid.RowDefinitions[2];
     private RowDefinition    VGapRow     => RootGrid.RowDefinitions[1];
@@ -259,63 +260,92 @@ public partial class EditorView : Window
         _watcherService = new FileWatcherService(
             _integrityService,
             onFileCorrupted: (path) =>
+{
+    Avalonia.Threading.Dispatcher.UIThread.Post(async () =>
+    {
+        if (_handlingCorruption) return;
+        _handlingCorruption = true;
+
+        try
+        {
+            var tab = _tabService.FindByPath(path);
+            if (tab == null) return;
+
+            tab.IsCorrupt = true;
+            RenderTabs();
+
+            if (_tabService.ActiveTab == tab)
             {
-                Avalonia.Threading.Dispatcher.UIThread.Post(async () =>
+                TextEditor.IsReadOnly = true;
+                _switchingTab = true;
+                TextEditor.Text = File.ReadAllText(path);
+                _switchingTab = false;
+                UpdateSignatureStatus(path, File.ReadAllText(path));
+            }
+
+            var dialog = new IntegrityWarningDialog(IntegrityWarningDialog.Mode.Corrupt);
+            string? result = await dialog.ShowDialog<string?>(this);
+
+            if (result == "delete")
+            {
+                try
                 {
-                    var tab = _tabService.FindByPath(path);
-                    if (tab == null) return;
+                    CloseTab(tab);
+                    SignatureStatusText.IsVisible = false;
+                    File.Delete(path);
+                    _integrityService.RemoveSignature(path);
+                    _explorerService.Show(_projectService.CurrentProjectPath!);
+                }
+                catch (Exception ex)
+                {
+                    AppendConsoleLine($"Error al eliminar archivo: {ex.Message}\n", true);
+                }
+            }
+            else if (result == "restore")
+            {
+                string? backup = _integrityService.Restore(path);
+                if (backup == null)
+                {
+                    await AlertDialog.Show(this, "Restauración fallida", "No hay una versión previa guardada para este archivo.");
+                    return;
+                }
 
-                    tab.IsCorrupt = true;
-                    RenderTabs();
+                _watcherService.IgnoreChanges = true;
+                File.WriteAllText(path, backup);
+                _integrityService.Sign(path, backup);
 
-                    if (_tabService.ActiveTab == tab)
-                        TextEditor.IsReadOnly = true;  // bloquear edición
+                tab.IsCorrupt         = false;
+                tab.Content           = backup;
+                tab.IsModified        = false;
+                TextEditor.IsReadOnly = false;
 
-                    var dialog = new IntegrityWarningDialog(IntegrityWarningDialog.Mode.Corrupt);
-                    string? result = await dialog.ShowDialog<string?>(this);
+                if (_tabService.ActiveTab == tab)
+                {
+                    _switchingTab = true;
+                    TextEditor.Text = backup;
+                    _switchingTab = false;
+                }
 
-                    if (result == "delete")
-                    {
-                        try
-                        {
-                            CloseTab(tab);
-                            File.Delete(path);
-                            _integrityService.RemoveSignature(path);
-                            _explorerService.Show(_projectService.CurrentProjectPath!);
-                        }
-                        catch (Exception ex)
-                        {
-                            AppendConsoleLine($"Error al eliminar archivo: {ex.Message}\n", true);
-                        }
-                    }
-                    else if (result == "restore")
-                    {
-                        string? backup = _integrityService.Restore(path);
-                        if (backup == null)
-                        {
-                            await AlertDialog.Show(this, "Restauración fallida", "No hay una versión previa guardada para este archivo.");
-                            return;
-                        }
+                await System.Threading.Tasks.Task.Delay(500);
+                _watcherService.IgnoreChanges = false;
 
-                        File.WriteAllText(path, backup);
-                        _integrityService.Sign(path, backup);
-                        tab.IsCorrupt        = false;
-                        tab.Content          = backup;
-                        TextEditor.IsReadOnly = false; 
+                if (_tabService.ActiveTab == tab)
+                {
+                    _switchingTab = true;
+                    TextEditor.Text = backup;
+                    _switchingTab = false;
+                    UpdateSignatureStatus(path, backup);
+                }
 
-                        if (_tabService.ActiveTab == tab)
-                        {
-                            _switchingTab = true;
-                            TextEditor.Text = backup;
-                            _switchingTab = false;
-                        }
-
-                        RenderTabs();
-                    }
-                    else if (result == "cancel")
-                    { }
-                });
-            },
+                RenderTabs();
+            }
+        }
+        finally
+        {
+            _handlingCorruption = false;
+        }
+    });
+},
             onProjectStructureChanged: RefreshExplorerFromWatcher
         );
         
@@ -609,9 +639,13 @@ public partial class EditorView : Window
 
         if (!valid)
         {
+            if (_handlingCorruption) return;
+            _handlingCorruption = true;
+            
             var mode   = hasSig ? IntegrityWarningDialog.Mode.Corrupt : IntegrityWarningDialog.Mode.External;
             var dialog = new IntegrityWarningDialog(mode);
             string? result = await dialog.ShowDialog<string?>(this);
+            _handlingCorruption = false;
 
             if (result == "cancel") return;
 
@@ -619,11 +653,10 @@ public partial class EditorView : Window
             {
                 try
                 {
-                    var existingTab = _tabService.FindByPath(fullPath);
-                    if (existingTab != null) CloseTab(existingTab);
-
                     File.Delete(fullPath);
                     _integrityService.RemoveSignature(fullPath);
+                    var existingTab = _tabService.FindByPath(fullPath);
+                    if (existingTab != null) CloseTab(existingTab);
 
                     if (!string.IsNullOrWhiteSpace(_projectService.CurrentProjectPath))
                         _explorerService.Show(_projectService.CurrentProjectPath!);
@@ -669,8 +702,6 @@ public partial class EditorView : Window
         File.WriteAllText(_currentFilePath, content);
         _integrityService.Sign(_currentFilePath, content);
         
-        //decorator
-        new SignedScriptDecorator(new BasicScript(_currentFilePath, content)).Sign();
         UpdateSignatureStatus(_currentFilePath, content);
     }
 
@@ -715,6 +746,8 @@ public partial class EditorView : Window
             LineNumberScroller.IsVisible     = false;
             EmptyEditorPlaceholder.IsVisible = true;
             SignatureStatusText.IsVisible = false;
+            TabsPanel.Children.Clear();
+            TreeExplorer.SelectedItem = null;
         }
     }
 
@@ -802,15 +835,15 @@ public partial class EditorView : Window
     private void UpdateSignatureStatus(string filePath, string content)
     {
         SignatureStatusText.IsVisible = true;
-        
-        var script = new BasicScript(filePath, content);
-        var signed = new SignedScriptDecorator(script);
 
-        (SignatureStatusText.Text, SignatureStatusText.Foreground) = signed.VerifySignature() switch
+        bool hasSig = _integrityService.HasSignature(filePath);
+        bool valid  = _integrityService.Validate(filePath, content);
+
+        (SignatureStatusText.Text, SignatureStatusText.Foreground) = (!hasSig || !valid) switch
         {
-            SignatureStatus.Valid   => ("● Firma válida",   new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.Parse("#9ece6a"))),
-            SignatureStatus.Invalid => ("● Firma inválida", new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.Parse("#f87171"))),
-            _                      => ("● Sin firma",       new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.Parse("#666666")))
+            true when !hasSig => ("● Sin firma",      new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.Parse("#666666"))),
+            true              => ("● Firma inválida", new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.Parse("#f87171"))),
+            _                 => ("● Firma válida",   new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.Parse("#9ece6a")))
         };
     }
 }

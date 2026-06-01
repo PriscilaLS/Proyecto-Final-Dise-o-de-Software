@@ -1,6 +1,3 @@
-using System;
-using System.Security.Cryptography;
-using System.Text;
 using ClientLocal.Services.Editor;
 
 namespace ClientLocal.Decorator;
@@ -9,35 +6,30 @@ public enum SignatureStatus { NotSigned, Valid, Invalid }
 
 public class SignedScriptDecorator : ScriptDecorator
 {
+    private readonly IIntegrityService _integrity = FileIntegrityService.Instance;
+
     public SignedScriptDecorator(IScript inner) : base(inner) { }
 
     public void Sign()
     {
-        string hash = ComputeHash(_inner.GetText());
-        SignatureStore.Save(_inner.GetPath(), hash);
+        _integrity.Sign(_inner.GetPath(), _inner.GetText());
     }
 
     public SignatureStatus VerifySignature()
     {
-        string? savedHash = SignatureStore.GetHash(_inner.GetPath());
-        
-        if(savedHash == null)
+        if (!_integrity.HasSignature(_inner.GetPath()))
             return SignatureStatus.NotSigned;
-        
-        string currentHash= ComputeHash(_inner.GetText());
-        return savedHash == currentHash ? SignatureStatus.Valid : SignatureStatus.Invalid;
+
+        return _integrity.Validate(_inner.GetPath(), _inner.GetText())
+            ? SignatureStatus.Valid
+            : SignatureStatus.Invalid;
     }
 
     public void RegenerateSignature()
     {
-        SignatureStore.Delete(_inner.GetPath());
-        Sign();
+        _integrity.RemoveSignature(_inner.GetPath());
+        _integrity.Sign(_inner.GetPath(), _inner.GetText());
     }
 
-    private static string ComputeHash(string text)
-    {
-        byte[] bytes = Encoding.UTF8.GetBytes(text);
-        byte[] hash = SHA256.HashData(bytes);
-        return Convert.ToHexString(hash).ToLowerInvariant();
-    }
+    public string? Restore() => _integrity.Restore(_inner.GetPath());
 }

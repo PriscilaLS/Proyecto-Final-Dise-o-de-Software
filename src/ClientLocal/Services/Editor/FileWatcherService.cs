@@ -10,6 +10,7 @@ public class FileWatcherService : IDisposable
     private readonly IIntegrityService _integrityService;
     private readonly Action<string> _onFileCorrupted;
     private readonly Action? _onProjectStructureChanged;
+    public bool IgnoreChanges { get; set; } = false;
 
     public FileWatcherService(
         IIntegrityService integrityService,
@@ -41,6 +42,7 @@ public class FileWatcherService : IDisposable
     
     private void OnChanged(object sender, FileSystemEventArgs e)
     {
+        if (IgnoreChanges) return;
         if (!File.Exists(e.FullPath)) return;
         if (!string.Equals(Path.GetExtension(e.FullPath), ".py", StringComparison.OrdinalIgnoreCase)) return;
         if (!_integrityService.HasSignature(e.FullPath)) return;
