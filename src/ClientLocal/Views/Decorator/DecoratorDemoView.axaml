@@ -1,0 +1,89 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="ClientLocal.Views.Decorator.DecoratorDemoView">
+  <Border Padding="24">
+    <Grid RowDefinitions="Auto,Auto,Auto,Auto,*,Auto" ColumnDefinitions="*,*">
+      <TextBlock Grid.ColumnSpan="2"
+                 Text="Demo Patrón Decorator - Script"
+                 FontSize="24"
+                 FontWeight="Bold"
+                 Margin="0,0,0,16"/>
+
+      <StackPanel Grid.Row="1"
+                  Grid.ColumnSpan="2"
+                  Orientation="Horizontal"
+                  Spacing="10">
+        <Button Content="Cargar Script"
+                Width="140"
+                Click="LoadScriptButton_Click"/>
+        <Button Content="Firmar"
+                Width="120"
+                Click="SignButton_Click"/>
+        <Button Content="Verificar Firma"
+                Width="140"
+                Click="VerifyButton_Click"/>
+        <Button Content="Regenerar Firma"
+                Width="150"
+                Click="RegenerateButton_Click"/>
+      </StackPanel>
+
+      <TextBlock Grid.Row="2"
+                 Grid.ColumnSpan="2"
+                 x:Name="PathTextBlock"
+                 Margin="0,16,0,8"
+                 TextWrapping="Wrap"
+                 Text="Ruta: sin archivo cargado"/>
+
+      <TextBlock Grid.Row="3"
+                 Grid.ColumnSpan="2"
+                 x:Name="StatusTextBlock"
+                 Foreground="Orange"
+                 Margin="0,0,0,16"
+                 TextWrapping="Wrap"
+                 Text="Estado de firma: No firmado"/>
+
+      <Border Grid.Row="4"
+              Grid.Column="0"
+              Margin="0,0,12,0"
+              Background="#111827"
+              CornerRadius="10"
+              Padding="12">
+        <Grid RowDefinitions="Auto,*">
+          <TextBlock Text="Texto original"
+                     FontWeight="Bold"
+                     Margin="0,0,0,10"/>
+          <TextBox x:Name="PlainTextBox"
+                   Grid.Row="1"
+                   IsReadOnly="True"
+                   AcceptsReturn="True"
+                   TextWrapping="NoWrap"
+                   ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                   ScrollViewer.VerticalScrollBarVisibility="Auto"/>
+        </Grid>
+      </Border>
+
+      <Border Grid.Row="4"
+              Grid.Column="1"
+              Margin="12,0,0,0"
+              Background="#111827"
+              CornerRadius="10"
+              Padding="12">
+        <Grid RowDefinitions="Auto,*">
+          <TextBlock Text="Texto con syntax highlight"
+                     FontWeight="Bold"
+                     Margin="0,0,0,10"/>
+          <SelectableTextBlock x:Name="HighlightedTextBlock"
+                               Grid.Row="1"
+                               TextWrapping="Wrap"/>
+        </Grid>
+      </Border>
+
+      <TextBlock Grid.Row="5"
+                 Grid.ColumnSpan="2"
+                 x:Name="SignatureInfoTextBlock"
+                 Margin="0,16,0,0"
+                 TextWrapping="Wrap"
+                 Text="Firma almacenada: sin información"/>
+    </Grid>
+  </Border>
+</UserControl>
