@@ -15,44 +15,32 @@ class LoginPage extends BasePage
         $message = "";
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
-            $email = $_POST['email'];
-            $password = $_POST['password'];
+            $email = $_POST['email'] ?? '';
+            $password = $_POST['password'] ?? '';
 
             $service = new AuthService();
-
             $response = $service->login($email, $password);
 
             if (isset($response['token'])) {
-
                 $_SESSION['token'] = $response['token'];
-
-                $message = "<p class='success'>Login exitoso</p>";
-
-            } else {
-
-                $message = "<p class='error'>Credenciales inválidas</p>";
+                $_SESSION['user'] = $response['user'] ?? [];
+                header('Location: index.php?page=courses');
+                exit;
             }
+
+            $error = $response['error'] ?? 'Credenciales invalidas';
+            $message = "<p class='error'>{$error}</p>";
         }
 
         return "
-
         <div class='card'>
-
-            <h1>Iniciar Sesión</h1>
-
+            <h1>Iniciar Sesion</h1>
             {$message}
-
             <form method='POST'>
-
                 <input type='email' name='email' placeholder='Correo' required>
-
-                <input type='password' name='password' placeholder='Contraseña' required>
-
+                <input type='password' name='password' placeholder='Contrasena' required>
                 <button type='submit'>Ingresar</button>
-
             </form>
-
         </div>
         ";
     }

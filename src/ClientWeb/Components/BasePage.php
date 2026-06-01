@@ -8,13 +8,15 @@ abstract class BasePage
 
     public function render()
     {
-        include 'Components/Header.php';
+        $content = $this->renderContent();
+
+        include 'Components/header.php';
         include 'Components/Navbar.php';
 
         echo "<div class='main-container'>";
-        echo $this->renderContent();
+        echo $content;
         echo "</div>";
 
-        include 'Components/Footer.php';
+        include 'Components/footer.php';
     }
 }

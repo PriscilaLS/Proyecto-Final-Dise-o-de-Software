@@ -33,6 +33,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    padding: 40px;
 }
 
 .card {
@@ -57,6 +58,12 @@ form {
 }
 
 input {
+    padding: 14px;
+    border-radius: 10px;
+    border: none;
+}
+
+select {
     padding: 14px;
     border-radius: 10px;
     border: none;
@@ -122,11 +129,14 @@ button {
     margin-bottom: 15px;
 }
 
-.course-card a {
+.course-card a,
+.task-card a,
+.button-link {
 
     display: inline-block;
 
     margin-top: 20px;
+    margin-right: 10px;
 
     background: #38bdf8;
 
@@ -137,6 +147,40 @@ button {
     border-radius: 8px;
 
     text-decoration: none;
+}
+
+.back-link {
+    display: inline-block;
+    margin-top: 20px;
+    color: #38bdf8;
+}
+
+.page-panel {
+    width: 100%;
+}
+
+.page-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #1e293b;
+}
+
+.data-table th,
+.data-table td {
+    padding: 14px;
+    border-bottom: 1px solid #334155;
+    text-align: left;
+}
+
+.data-table a {
+    color: #38bdf8;
 }
 
 textarea {
