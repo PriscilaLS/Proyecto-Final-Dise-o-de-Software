@@ -21,7 +21,7 @@ public partial class MainWindow : Window
         MinWidth = 800;
         MinHeight = 600;
 
-        ShowLogin();
+        OpenIdeWindow();
     }
 
     private void ShowLogin()
