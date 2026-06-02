@@ -77,10 +77,9 @@ namespace ClientLocal.Views.Auth
                 if (_statusTextBlock != null)
                 {
                     _statusTextBlock.Foreground = Brushes.Green;
-                    _statusTextBlock.Text = response.Message ?? "Registro exitoso. Ya puedes iniciar sesión.";
+                    _statusTextBlock.Text = response.Message ?? "Registro exitoso. Ya puedes iniciar sesi\u00f3n.";
                 }
 
-                // Volver al login automáticamente
                 BackRequested?.Invoke();
             }
             catch (Exception ex)
@@ -88,7 +87,7 @@ namespace ClientLocal.Views.Auth
                 if (_statusTextBlock != null)
                 {
                     _statusTextBlock.Foreground = Brushes.Red;
-                    _statusTextBlock.Text = $"Error de conexión: {ex.Message}";
+                    _statusTextBlock.Text = $"Error de conexi\u00f3n: {ex.Message}";
                 }
             }
         }

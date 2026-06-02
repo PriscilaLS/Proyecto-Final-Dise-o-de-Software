@@ -2,13 +2,13 @@
 
 ## Artefacto generado
 
-El cliente local fue publicado como aplicacion Windows self-contained en:
+El cliente local fue publicado como aplicación Windows self-contained en:
 
 ```text
 artifacts/ClientLocal-win-x64/
 ```
 
-Tambien se genero un ZIP listo para compartir:
+También se generó un ZIP listo para compartir:
 
 ```text
 artifacts/ClientLocal-win-x64.zip
@@ -24,11 +24,11 @@ artifacts/ClientLocal-win-x64/ClientLocal.exe
 
 - Windows 10 o superior.
 - Python instalado y disponible como `python` en PATH.
-- Conexion al backend configurado en el cliente local.
+- Conexión al backend configurado en el cliente local.
 
-El build fue generado como self-contained, por lo que no deberia requerir instalar .NET manualmente.
+El build fue generado como self-contained, por lo que no debería requerir instalar .NET manualmente.
 
-## Como ejecutar
+## Cómo ejecutar
 
 1. Descomprimir `ClientLocal-win-x64.zip`.
 2. Abrir la carpeta descomprimida.
@@ -40,22 +40,22 @@ ClientLocal.exe
 
 ## Comando usado para generar el ejecutable
 
-Desde la raiz del repositorio:
+Desde la raíz del repositorio:
 
 ```powershell
 dotnet publish .\src\ClientLocal\ClientLocal.csproj -c Release -r win-x64 --self-contained true -o .\artifacts\ClientLocal-win-x64
 ```
 
-Luego se comprimio la carpeta publicada:
+Luego se comprimió la carpeta publicada:
 
 ```powershell
 Compress-Archive -Path artifacts\ClientLocal-win-x64\* -DestinationPath artifacts\ClientLocal-win-x64.zip
 ```
 
-## Prueba rapida
+## Prueba rápida
 
 1. Abrir `ClientLocal.exe`.
-2. Iniciar sesion.
+2. Iniciar sesión.
 3. Abrir el IDE.
 4. Crear o abrir un proyecto.
 5. Crear un script `.py`.

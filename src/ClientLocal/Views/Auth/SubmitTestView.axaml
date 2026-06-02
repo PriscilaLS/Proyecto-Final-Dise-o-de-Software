@@ -70,13 +70,13 @@
                 Foreground="#082f49"
                 FontWeight="Bold"
                 Click="SubmitButton_Click"/>
-        <Button Content="Probar clipboard"
+        <Button Content="Abrir IDE"
                 Width="150"
                 Height="44"
                 Background="#263449"
                 Foreground="#f8fafc"
                 FontWeight="Bold"
-                Click="ClipboardTestButton_Click"/>
+                Click="OpenIdeButton_Click"/>
         <Button Content="Volver"
                 Width="120"
                 Height="44"

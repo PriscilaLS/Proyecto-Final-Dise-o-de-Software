@@ -83,7 +83,7 @@ var signedScript = new SignedScriptDecorator(script);
 var highlightedScript = new HighlightedScriptDecorator(script);
 ```
 
-## Flujo de la interfaz grafica
+## Flujo de la interfaz gráfica
 
 La pantalla de demostracion se encuentra en:
 
@@ -107,15 +107,15 @@ dotnet run --project .\src\ClientLocal\ClientLocal.csproj -- --decorator-demo
 
 ## Prueba realizada
 
-1. Se cargo el archivo `samples/decorator/demo_script.py`.
-2. La aplicacion mostro el texto original del script.
-3. La aplicacion mostro el script con syntax highlight.
-4. Se presiono `Firmar` y se guardo la firma local.
-5. Se presiono `Verificar Firma` y la firma fue valida.
-6. Se modifico el archivo desde Notepad, cambiando texto dentro del script.
-7. Se presiono `Verificar Firma` y la aplicacion detecto que el archivo habia cambiado fuera de la aplicacion.
-8. Se presiono `Regenerar Firma` para aceptar la nueva version del archivo.
-9. Se verifico nuevamente y la firma volvio a ser valida.
+1. Se cargó el archivo `samples/decorator/demo_script.py`.
+2. La aplicación mostró el texto original del script.
+3. La aplicación mostró el script con syntax highlight.
+4. Se presionó `Firmar` y se guardó la firma local.
+5. Se presionó `Verificar Firma` y la firma fue valida.
+6. Se modificó el archivo desde Notepad, cambiando texto dentro del script.
+7. Se presionó `Verificar Firma` y la aplicacion detecto que el archivo habia cambiado fuera de la aplicacion.
+8. Se presionó `Regenerar Firma` para aceptar la nueva version del archivo.
+9. Se verificó nuevamente y la firma volvio a ser valida.
 
 ## Diferencia entre Firmar y Regenerar Firma
 
@@ -123,7 +123,7 @@ dotnet run --project .\src\ClientLocal\ClientLocal.csproj -- --decorator-demo
 
 `Regenerar Firma` se usa cuando el archivo cambio y el usuario decide aceptar esa nueva version como valida. En ese caso se reemplaza la firma anterior por una firma nueva.
 
-Esta separacion evita que el boton de firmar oculte accidentalmente una modificacion externa.
+Esta separación evita que el boton de firmar oculte accidentalmente una modificacion externa.
 
 ## Archivos implementados
 
@@ -140,6 +140,6 @@ Esta separacion evita que el boton de firmar oculte accidentalmente una modifica
 
 ## Conclusiones
 
-El patron Decorator permite extender el comportamiento de `Script` sin modificar el componente base. En esta solucion, la firma y el syntax highlight se agregan como capas independientes, lo que mantiene el codigo mas flexible y facil de extender.
+El patrón Decorator permite extender el comportamiento de `Script` sin modificar el componente base. En esta solucion, la firma y el syntax highlight se agregan como capas independientes, lo que mantiene el codigo mas flexible y facil de extender.
 
 La verificacion de firma permite detectar modificaciones externas al archivo, cumpliendo con el requerimiento de integridad. El syntax highlight demuestra otra extension opcional aplicada al mismo objeto base.

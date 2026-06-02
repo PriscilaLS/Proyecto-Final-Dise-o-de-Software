@@ -30,7 +30,7 @@ namespace ClientLocal.Views.Auth
 
         public event Action? BackRequested;
         public event Action? BackToCoursesRequested;
-        public event Action? ClipboardTestRequested;
+        public event Action? IdeRequested;
 
         public SubmitTestView(SessionService sessionService, TaskDto task)
         {
@@ -191,9 +191,9 @@ namespace ClientLocal.Views.Auth
             }
         }
 
-        private void ClipboardTestButton_Click(object? sender, RoutedEventArgs e)
+        private void OpenIdeButton_Click(object? sender, RoutedEventArgs e)
         {
-            ClipboardTestRequested?.Invoke();
+            IdeRequested?.Invoke();
         }
 
         private void BackButton_Click(object? sender, RoutedEventArgs e)
