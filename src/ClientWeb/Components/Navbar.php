@@ -3,9 +3,11 @@
 
     <div class="nav-links">
         <?php $role = $_SESSION['user']['role'] ?? ''; ?>
+        <?php $currentPage = $_GET['page'] ?? 'login'; ?>
+        <?php $isAuthPage = in_array($currentPage, ['login', 'register'], true); ?>
 
-        <?php if (empty($_SESSION['token'])): ?>
-            <a href="index.php?page=login">Login</a>
+        <?php if (empty($_SESSION['token']) || $isAuthPage): ?>
+            <a href="index.php?page=login">Iniciar sesi&oacute;n</a>
             <a href="index.php?page=register">Registro</a>
         <?php else: ?>
             <a href="index.php?page=courses">Cursos</a>
@@ -18,7 +20,7 @@
                 <a href="index.php?page=join-course">Unirse</a>
             <?php endif; ?>
 
-            <a href="index.php?page=logout">Salir</a>
+            <a class="logout-link" href="index.php?page=logout">Salir</a>
         <?php endif; ?>
     </div>
 </nav>

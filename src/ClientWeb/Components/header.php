@@ -9,7 +9,7 @@
 
     <title>EduIDE</title>
 
-    <link rel="stylesheet" href="Assets/css/style.css">
+    <link rel="stylesheet" href="Assets/css/style.css?v=20260601-ui2">
 
 </head>
 
