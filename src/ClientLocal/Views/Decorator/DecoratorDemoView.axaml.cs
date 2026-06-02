@@ -20,6 +20,7 @@ namespace ClientLocal.Views.Decorator
         private BasicScript? _basicScript;
         private SignedScriptDecorator? _signedScript;
         private HighlightedScriptDecorator? _highlightedScript;
+        private bool _isRefreshingView;
 
         public DecoratorDemoView()
         {
@@ -162,14 +163,42 @@ namespace ClientLocal.Views.Decorator
             if (_basicScript == null)
                 return;
 
+            _isRefreshingView = true;
+
             if (_pathTextBlock != null)
                 _pathTextBlock.Text = $"Ruta: {_basicScript.GetPath()}";
 
             if (_plainTextBox != null)
                 _plainTextBox.Text = _basicScript.GetText();
 
+            _isRefreshingView = false;
+
             RefreshHighlightedText();
             RefreshSignatureInfo();
+        }
+
+        private void PlainTextBox_TextChanged(object? sender, TextChangedEventArgs e)
+        {
+            if (_isRefreshingView || _basicScript == null || _plainTextBox == null)
+                return;
+
+            var path = _basicScript.GetPath();
+
+            if (!File.Exists(path))
+            {
+                SetStatus("El archivo ya no existe en la ruta original.", Brushes.Red);
+                return;
+            }
+
+            File.WriteAllText(path, _plainTextBox.Text ?? string.Empty);
+
+            _basicScript = new BasicScript(path);
+            _signedScript = new SignedScriptDecorator(_basicScript);
+            _highlightedScript = new HighlightedScriptDecorator(_basicScript);
+
+            RefreshHighlightedText();
+            RefreshSignatureInfo();
+            SetStatus("Estado de firma: Cambios guardados. Verifica o regenera la firma.", Brushes.Orange);
         }
 
         private void RefreshHighlightedText()
