@@ -1,25 +1,98 @@
-<UserControl xmlns="https://github.com/avaloniaui"
+﻿<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="ClientLocal.Views.Auth.RegisterView">
-  <Border Padding="24">
-    <StackPanel Spacing="12" Width="320" HorizontalAlignment="Center" VerticalAlignment="Center">
-      <TextBlock Text="Crear cuenta" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center"/>
+  <Border Background="#0f172a" Padding="32">
+    <Grid>
+      <Border Width="440"
+              Padding="42"
+              CornerRadius="18"
+              Background="#162235"
+              BorderBrush="#24344f"
+              BorderThickness="1"
+              HorizontalAlignment="Center"
+              VerticalAlignment="Center">
+        <StackPanel Spacing="18">
+          <StackPanel Spacing="8" Margin="0,0,0,8">
+            <TextBlock Text="Crear cuenta"
+                       FontSize="34"
+                       FontWeight="Bold"
+                       Foreground="#f8fafc"
+                       HorizontalAlignment="Center"/>
+            <TextBlock Text="Registra una cuenta para acceder al sistema"
+                       FontSize="15"
+                       Foreground="#9db3ca"
+                       HorizontalAlignment="Center"/>
+          </StackPanel>
 
-      <TextBlock Text="Nombre"/>
-      <TextBox x:Name="NameTextBox"/>
+          <StackPanel Spacing="8">
+            <TextBlock Text="Nombre"
+                       FontSize="13"
+                       FontWeight="SemiBold"
+                       Foreground="#cbd5e1"/>
+            <TextBox x:Name="NameTextBox"
+                     Height="48"
+                     CornerRadius="10"
+                     Background="#0f172a"
+                     Foreground="#f8fafc"
+                     BorderBrush="#334155"
+                     PlaceholderText="Nombre completo"/>
+          </StackPanel>
 
-      <TextBlock Text="Correo"/>
-      <TextBox x:Name="EmailTextBox"/>
+          <StackPanel Spacing="8">
+            <TextBlock Text="Correo electr&#243;nico"
+                       FontSize="13"
+                       FontWeight="SemiBold"
+                       Foreground="#cbd5e1"/>
+            <TextBox x:Name="EmailTextBox"
+                     Height="48"
+                     CornerRadius="10"
+                     Background="#0f172a"
+                     Foreground="#f8fafc"
+                     BorderBrush="#334155"
+                     PlaceholderText="usuario@ejemplo.com"/>
+          </StackPanel>
 
-      <TextBlock Text="Contraseña"/>
-      <TextBox x:Name="PasswordTextBox" PasswordChar="*"/>
+          <StackPanel Spacing="8">
+            <TextBlock Text="Contrase&#241;a"
+                       FontSize="13"
+                       FontWeight="SemiBold"
+                       Foreground="#cbd5e1"/>
+            <TextBox x:Name="PasswordTextBox"
+                     Height="48"
+                     CornerRadius="10"
+                     Background="#0f172a"
+                     Foreground="#f8fafc"
+                     BorderBrush="#334155"
+                     PasswordChar="*"/>
+          </StackPanel>
 
-      <TextBlock x:Name="StatusTextBlock" Foreground="Red" TextWrapping="Wrap"/>
+          <TextBlock x:Name="StatusTextBlock"
+                     Foreground="#f87171"
+                     TextWrapping="Wrap"
+                     TextAlignment="Center"/>
 
-      <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Center">
-        <Button Content="Registrar" Width="120" Click="RegisterButton_Click"/>
-        <Button Content="Volver" Width="120" Click="BackButton_Click"/>
-      </StackPanel>
-    </StackPanel>
+          <StackPanel Orientation="Horizontal"
+                      Spacing="12"
+                      HorizontalAlignment="Center"
+                      Margin="0,4,0,0">
+            <Button Content="Registrar"
+                    Width="150"
+                    Height="44"
+                    Background="#38bdf8"
+                    Foreground="#082f49"
+                    FontWeight="Bold"
+                    Click="RegisterButton_Click"/>
+            <Button Content="Volver"
+                    Width="150"
+                    Height="44"
+                    Background="#263449"
+                    Foreground="#f8fafc"
+                    FontWeight="Bold"
+                    Click="BackButton_Click"/>
+          </StackPanel>
+        </StackPanel>
+      </Border>
+    </Grid>
   </Border>
 </UserControl>
+

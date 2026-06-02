@@ -16,5 +16,8 @@ namespace ClientLocal.Models.Courses
 
         [JsonPropertyName("join_code")]
         public string? JoinCode { get; set; }
+
+        [JsonIgnore]
+        public bool ShowJoinCode { get; set; }
     }
 }

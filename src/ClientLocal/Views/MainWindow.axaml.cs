@@ -73,6 +73,7 @@ public partial class MainWindow : Window
 
         var tasks = new TasksTestView(_sessionService!, course);
         tasks.SubmitRequested += ShowSubmit;
+        tasks.BackToCoursesRequested += ShowCourses;
         Content = tasks;
     }
 
@@ -89,6 +90,7 @@ public partial class MainWindow : Window
         };
 
         submit.ClipboardTestRequested += ShowClipboardTest;
+        submit.BackToCoursesRequested += ShowCourses;
         Content = submit;
     }
 

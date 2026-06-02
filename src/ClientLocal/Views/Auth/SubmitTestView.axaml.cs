@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -29,6 +29,7 @@ namespace ClientLocal.Views.Auth
         private TextBlock? _resultTextBlock;
 
         public event Action? BackRequested;
+        public event Action? BackToCoursesRequested;
         public event Action? ClipboardTestRequested;
 
         public SubmitTestView(SessionService sessionService, TaskDto task)
@@ -106,12 +107,12 @@ namespace ClientLocal.Views.Auth
 
                 if (!isValid)
                 {
-                    SetError($"Archivo con firma invalida: {Path.GetFileName(file)}");
+                    SetError($"Archivo con firma inv\u00e1lida: {Path.GetFileName(file)}");
                     return;
                 }
             }
 
-            SetSuccess("Validacion correcta. Todas las firmas son validas.");
+            SetSuccess("Validaci\u00f3n correcta. Todas las firmas son v\u00e1lidas.");
         }
 
         private async void SubmitButton_Click(object? sender, RoutedEventArgs e)
@@ -136,7 +137,7 @@ namespace ClientLocal.Views.Auth
 
                 if (!isValid)
                 {
-                    SetError($"No se puede enviar. Firma invalida en: {Path.GetFileName(file)}");
+                    SetError($"No se puede enviar. Firma inv\u00e1lida en: {Path.GetFileName(file)}");
                     if (sender is Button invalidSignatureButton)
                         invalidSignatureButton.IsEnabled = true;
                     return;
@@ -172,7 +173,7 @@ namespace ClientLocal.Views.Auth
             }
             catch (TaskCanceledException)
             {
-                SetError("Error al enviar la entrega: el backend no respondio a tiempo.");
+                SetError("Error al enviar la entrega: el backend no respondi\u00f3 a tiempo.");
             }
             catch (Exception ex)
             {
@@ -198,6 +199,11 @@ namespace ClientLocal.Views.Auth
         private void BackButton_Click(object? sender, RoutedEventArgs e)
         {
             BackRequested?.Invoke();
+        }
+
+        private void BackToCoursesButton_Click(object? sender, RoutedEventArgs e)
+        {
+            BackToCoursesRequested?.Invoke();
         }
 
         private bool ValidateProjectFolder(string projectPath, out string[] pythonFiles)
@@ -252,3 +258,4 @@ namespace ClientLocal.Views.Auth
         }
     }
 }
+

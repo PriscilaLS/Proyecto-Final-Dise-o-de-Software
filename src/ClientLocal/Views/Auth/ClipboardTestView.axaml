@@ -1,37 +1,54 @@
-<UserControl xmlns="https://github.com/avaloniaui"
+﻿<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="ClientLocal.Views.Auth.ClipboardTestView">
-  <Border Padding="24">
-    <Grid RowDefinitions="Auto,Auto,*,Auto">
-      <TextBlock Text="Prueba temporal de ClipboardGuard"
-                 FontSize="24"
-                 FontWeight="Bold"
-                 Margin="0,0,0,16"/>
-
-      <TextBlock Grid.Row="1"
-                 Text="Copia dentro del mismo editor y pega: debe funcionar. Copia desde fuera y pega: debe bloquearse."
-                 TextWrapping="Wrap"
-                 Margin="0,0,0,16"/>
-
-      <TextBox x:Name="EditorTextBox"
-               Grid.Row="2"
-               AcceptsReturn="True"
-               ContextMenu="{x:Null}"
-               TextWrapping="Wrap"
-               ScrollViewer.VerticalScrollBarVisibility="Auto"
-               MinHeight="280"
-               Text="Escribe aquí. Selecciona texto dentro de este mismo editor, cópialo y pégalo para probar."/>
-
-      <StackPanel Grid.Row="3" Margin="0,16,0,0" Spacing="10">
-        <TextBlock x:Name="StatusTextBlock"
-                   Foreground="Orange"
-                   TextWrapping="Wrap"
-                   Text="Prueba pendiente."/>
-        <Button Content="Volver"
-                Width="120"
-                HorizontalAlignment="Left"
-                Click="BackButton_Click"/>
+  <Border Background="#0f172a" Padding="28">
+    <Grid RowDefinitions="Auto,*,Auto">
+      <StackPanel Spacing="6" Margin="0,0,0,20">
+        <TextBlock Text="Prueba de ClipboardGuard"
+                   FontSize="34"
+                   FontWeight="Bold"
+                   Foreground="#f8fafc"/>
+        <TextBlock Text="Copia dentro del editor para permitir pegado. Copia desde fuera para validar el bloqueo."
+                   Foreground="#9db3ca"
+                   TextWrapping="Wrap"/>
       </StackPanel>
+
+      <Border Grid.Row="1"
+              Background="#162235"
+              BorderBrush="#24344f"
+              BorderThickness="1"
+              CornerRadius="16"
+              Padding="18">
+        <TextBox x:Name="EditorTextBox"
+                 AcceptsReturn="True"
+                 ContextMenu="{x:Null}"
+                 TextWrapping="Wrap"
+                 ScrollViewer.VerticalScrollBarVisibility="Auto"
+                 Background="#0f172a"
+                 Foreground="#f8fafc"
+                 BorderBrush="#334155"
+                 MinHeight="320"
+                 Text="Escribe aqu&#237;. Selecciona texto dentro de este editor, c&#243;pialo y p&#233;galo para probar."/>
+      </Border>
+
+      <Grid Grid.Row="2"
+            ColumnDefinitions="*,Auto"
+            Margin="0,18,0,0">
+        <TextBlock x:Name="StatusTextBlock"
+                   Foreground="#fbbf24"
+                   TextWrapping="Wrap"
+                   VerticalAlignment="Center"
+                   Text="Prueba pendiente."/>
+        <Button Grid.Column="1"
+                Content="Volver"
+                Width="120"
+                Height="44"
+                Background="#263449"
+                Foreground="#f8fafc"
+                FontWeight="Bold"
+                Click="BackButton_Click"/>
+      </Grid>
     </Grid>
   </Border>
 </UserControl>
+

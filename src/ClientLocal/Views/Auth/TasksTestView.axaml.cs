@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
@@ -22,6 +22,7 @@ namespace ClientLocal.Views.Auth
         private TextBlock? _statusTextBlock;
 
         public event Action<TaskDto>? SubmitRequested;
+        public event Action? BackToCoursesRequested;
 
         public TasksTestView(SessionService sessionService, CourseDto course)
         {
@@ -89,9 +90,9 @@ namespace ClientLocal.Views.Auth
             if (_detailsTextBlock != null)
             {
                 _detailsTextBlock.Text =
-                    $"Título: {selectedTask.Title}\n\n" +
-                    $"Descripción: {selectedTask.Description}\n\n" +
-                    $"Fecha límite: {selectedTask.DueDate}";
+                    $"T\u00edtulo: {selectedTask.Title}\n\n" +
+                    $"Descripci\u00f3n: {selectedTask.Description}\n\n" +
+                    $"Fecha l\u00edmite: {selectedTask.DueDate}";
             }
         }
 
@@ -107,6 +108,11 @@ namespace ClientLocal.Views.Auth
             SubmitRequested?.Invoke(selectedTask);
         }
 
+        private void BackToCoursesButton_Click(object? sender, RoutedEventArgs e)
+        {
+            BackToCoursesRequested?.Invoke();
+        }
+
         private List<TaskDto> GetMockTasks()
         {
             return new List<TaskDto>
@@ -114,7 +120,7 @@ namespace ClientLocal.Views.Auth
                 new TaskDto
                 {
                     Id = 201,
-                    Title = "Tarea 1 - Autenticación",
+                    Title = "Tarea 1 - Autenticaci\u00f3n",
                     Description = "Implementar login y register conectado al backend.",
                     DueDate = "2026-05-25 23:59:00"
                 },
@@ -129,3 +135,4 @@ namespace ClientLocal.Views.Auth
         }
     }
 }
+

@@ -1,53 +1,115 @@
-<UserControl xmlns="https://github.com/avaloniaui"
+﻿<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="ClientLocal.Views.Auth.SubmitTestView">
-  <Border Padding="24">
-    <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,*">
-      <TextBlock x:Name="TitleTextBlock"
-                 FontSize="24"
-                 FontWeight="Bold"
-                 Margin="0,0,0,16"/>
-
-      <TextBlock Grid.Row="1"
-                 Text="Selecciona la carpeta del proyecto que vas a entregar."
-                 Margin="0,0,0,12"/>
-
-      <StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="10">
-        <TextBox x:Name="ProjectPathTextBox"
-                 Width="500"
-                 IsReadOnly="True"/>
-        <Button Content="Elegir carpeta"
-                Click="PickFolderButton_Click"/>
+  <Border Background="#0f172a" Padding="28">
+    <Grid RowDefinitions="Auto,Auto,Auto,*">
+      <StackPanel Spacing="4" Margin="0,0,0,24">
+        <TextBlock x:Name="TitleTextBlock"
+                   FontSize="34"
+                   FontWeight="Bold"
+                   Foreground="#f8fafc"/>
+        <TextBlock Text="Selecciona la carpeta del proyecto, firma los scripts y env&#237;a la entrega."
+                   Foreground="#9db3ca"
+                   TextWrapping="Wrap"/>
       </StackPanel>
 
-      <StackPanel Grid.Row="3" Orientation="Horizontal" Spacing="10" Margin="0,16,0,0">
+      <Border Grid.Row="1"
+              Background="#162235"
+              BorderBrush="#24344f"
+              BorderThickness="1"
+              CornerRadius="16"
+              Padding="18"
+              Margin="0,0,0,16">
+        <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,Auto" ColumnSpacing="12" RowSpacing="8">
+          <TextBlock Grid.ColumnSpan="2"
+                     Text="Carpeta del proyecto"
+                     Foreground="#cbd5e1"
+                     FontWeight="SemiBold"/>
+          <TextBox x:Name="ProjectPathTextBox"
+                   Grid.Row="1"
+                   Height="44"
+                   IsReadOnly="True"
+                   CornerRadius="10"
+                   Background="#0f172a"
+                   Foreground="#f8fafc"
+                   BorderBrush="#334155"/>
+          <Button Grid.Row="1"
+                  Grid.Column="1"
+                  Content="Elegir carpeta"
+                  Width="150"
+                  Height="44"
+                  Background="#38bdf8"
+                  Foreground="#082f49"
+                  FontWeight="Bold"
+                  Click="PickFolderButton_Click"/>
+        </Grid>
+      </Border>
+
+      <StackPanel Grid.Row="2"
+                  Orientation="Horizontal"
+                  Spacing="10"
+                  Margin="0,0,0,18">
         <Button Content="Firmar proyecto"
-                Width="140"
+                Width="150"
+                Height="44"
+                Background="#263449"
+                Foreground="#f8fafc"
+                FontWeight="Bold"
                 Click="SignButton_Click"/>
         <Button Content="Validar firmas"
-                Width="140"
+                Width="150"
+                Height="44"
+                Background="#263449"
+                Foreground="#f8fafc"
+                FontWeight="Bold"
                 Click="ValidateButton_Click"/>
         <Button Content="Enviar entrega"
-                Width="140"
+                Width="150"
+                Height="44"
+                Background="#38bdf8"
+                Foreground="#082f49"
+                FontWeight="Bold"
                 Click="SubmitButton_Click"/>
         <Button Content="Probar clipboard"
-                Width="140"
+                Width="150"
+                Height="44"
+                Background="#263449"
+                Foreground="#f8fafc"
+                FontWeight="Bold"
                 Click="ClipboardTestButton_Click"/>
         <Button Content="Volver"
                 Width="120"
+                Height="44"
+                Background="#263449"
+                Foreground="#f8fafc"
+                FontWeight="Bold"
                 Click="BackButton_Click"/>
+        <Button Content="Volver a cursos"
+                Width="150"
+                Height="44"
+                Background="#263449"
+                Foreground="#f8fafc"
+                FontWeight="Bold"
+                Click="BackToCoursesButton_Click"/>
       </StackPanel>
 
-      <TextBlock Grid.Row="4"
-                 x:Name="StatusTextBlock"
-                 Foreground="Red"
-                 TextWrapping="Wrap"
-                 Margin="0,16,0,0"/>
-
-      <TextBlock Grid.Row="5"
-                 x:Name="ResultTextBlock"
-                 TextWrapping="Wrap"
-                 Margin="0,12,0,0"/>
+      <Border Grid.Row="3"
+              Background="#162235"
+              BorderBrush="#24344f"
+              BorderThickness="1"
+              CornerRadius="16"
+              Padding="18">
+        <StackPanel Spacing="12">
+          <TextBlock x:Name="StatusTextBlock"
+                     Foreground="#f87171"
+                     FontWeight="SemiBold"
+                     TextWrapping="Wrap"/>
+          <TextBlock x:Name="ResultTextBlock"
+                     Foreground="#f8fafc"
+                     TextWrapping="Wrap"/>
+        </StackPanel>
+      </Border>
     </Grid>
   </Border>
 </UserControl>
+

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
@@ -54,6 +54,10 @@ namespace ClientLocal.Views.Auth
             try
             {
                 var courses = await _courseRepository.GetEnrolledCoursesAsync();
+                var canSeeJoinCode = _sessionService.UserRole == "teacher";
+
+                foreach (var course in courses)
+                    course.ShowJoinCode = canSeeJoinCode;
 
                 if (courses.Count == 0 && _statusTextBlock != null)
                     _statusTextBlock.Text = "No hay cursos matriculados.";
@@ -78,7 +82,7 @@ namespace ClientLocal.Views.Auth
             if (string.IsNullOrWhiteSpace(joinCode))
             {
                 if (_statusTextBlock != null)
-                    _statusTextBlock.Text = "Ingresa el codigo del curso.";
+                    _statusTextBlock.Text = "Ingresa el c\u00f3digo del curso.";
                 return;
             }
 
@@ -132,3 +136,4 @@ namespace ClientLocal.Views.Auth
         }
     }
 }
+
