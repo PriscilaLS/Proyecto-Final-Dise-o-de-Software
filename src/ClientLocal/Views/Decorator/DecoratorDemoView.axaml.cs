@@ -1,10 +1,13 @@
+using System;
 using System.IO;
+using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Controls.Documents;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Avalonia.Platform.Storage;
+using Avalonia.Threading;
 using ClientLocal.Services.Decorator;
 
 namespace ClientLocal.Views.Decorator
@@ -21,6 +24,9 @@ namespace ClientLocal.Views.Decorator
         private SignedScriptDecorator? _signedScript;
         private HighlightedScriptDecorator? _highlightedScript;
         private bool _isRefreshingView;
+        private bool _isHandlingExternalChange;
+        private DateTime _lastEditorSaveUtc = DateTime.MinValue;
+        private FileSystemWatcher? _fileWatcher;
 
         public DecoratorDemoView()
         {
@@ -68,6 +74,7 @@ namespace ClientLocal.Views.Decorator
             _basicScript = new BasicScript(path);
             _signedScript = new SignedScriptDecorator(_basicScript);
             _highlightedScript = new HighlightedScriptDecorator(_basicScript);
+            StartWatchingFile(path);
 
             RefreshView();
             SetStatus("Estado de firma: No firmado o pendiente de verificación", Brushes.Orange);
@@ -151,11 +158,22 @@ namespace ClientLocal.Views.Decorator
                 return false;
             }
 
-            _basicScript = new BasicScript(path);
-            _signedScript = new SignedScriptDecorator(_basicScript);
-            _highlightedScript = new HighlightedScriptDecorator(_basicScript);
-            RefreshView();
-            return true;
+            try
+            {
+                RebuildDecorators(path);
+                RefreshView();
+                return true;
+            }
+            catch (IOException)
+            {
+                SetStatus("El archivo está siendo usado por otra aplicación. Intenta verificar de nuevo.", Brushes.Orange);
+                return false;
+            }
+            catch (UnauthorizedAccessException)
+            {
+                SetStatus("No se tienen permisos para leer el archivo.", Brushes.Red);
+                return false;
+            }
         }
 
         private void RefreshView()
@@ -190,15 +208,112 @@ namespace ClientLocal.Views.Decorator
                 return;
             }
 
-            File.WriteAllText(path, _plainTextBox.Text ?? string.Empty);
+            try
+            {
+                _lastEditorSaveUtc = DateTime.UtcNow;
+                File.WriteAllText(path, _plainTextBox.Text ?? string.Empty);
+                RebuildDecorators(path);
+                RefreshHighlightedText();
+                RefreshSignatureInfo();
+                SetStatus("Estado de firma: Cambios guardados. Verifica o regenera la firma.", Brushes.Orange);
+            }
+            catch (IOException)
+            {
+                SetStatus("No se pudo guardar porque el archivo está siendo usado por otra aplicación.", Brushes.Orange);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                SetStatus("No se tienen permisos para guardar el archivo.", Brushes.Red);
+            }
+        }
 
+        private void RebuildDecorators(string path)
+        {
             _basicScript = new BasicScript(path);
             _signedScript = new SignedScriptDecorator(_basicScript);
             _highlightedScript = new HighlightedScriptDecorator(_basicScript);
+        }
 
-            RefreshHighlightedText();
-            RefreshSignatureInfo();
-            SetStatus("Estado de firma: Cambios guardados. Verifica o regenera la firma.", Brushes.Orange);
+        private void StartWatchingFile(string path)
+        {
+            _fileWatcher?.Dispose();
+            _fileWatcher = null;
+
+            var directory = Path.GetDirectoryName(path);
+            var fileName = Path.GetFileName(path);
+
+            if (string.IsNullOrWhiteSpace(directory) || string.IsNullOrWhiteSpace(fileName))
+                return;
+
+            _fileWatcher = new FileSystemWatcher(directory, fileName)
+            {
+                NotifyFilter = NotifyFilters.FileName |
+                               NotifyFilters.LastWrite |
+                               NotifyFilters.Size |
+                               NotifyFilters.CreationTime,
+                EnableRaisingEvents = true
+            };
+
+            _fileWatcher.Changed += (_, _) => QueueExternalRefresh(path);
+            _fileWatcher.Renamed += (_, _) => QueueExternalRefresh(path);
+            _fileWatcher.Deleted += (_, _) => QueueExternalRefresh(path);
+        }
+
+        private async void QueueExternalRefresh(string path)
+        {
+            if ((DateTime.UtcNow - _lastEditorSaveUtc).TotalMilliseconds < 800)
+                return;
+
+            await Task.Delay(300);
+            await Dispatcher.UIThread.InvokeAsync(() => RefreshFromExternalChange(path));
+        }
+
+        private void RefreshFromExternalChange(string path)
+        {
+            if (_isHandlingExternalChange || _basicScript == null)
+                return;
+
+            if (!string.Equals(_basicScript.GetPath(), path, StringComparison.OrdinalIgnoreCase))
+                return;
+
+            if (!File.Exists(path))
+            {
+                SetStatus("El archivo fue eliminado fuera de la aplicación.", Brushes.Red);
+                return;
+            }
+
+            try
+            {
+                _isHandlingExternalChange = true;
+                RebuildDecorators(path);
+                RefreshView();
+
+                if (_signedScript != null && _signedScript.HasStoredSignature())
+                {
+                    var isValid = _signedScript.VerifySignature();
+                    SetStatus(
+                        isValid
+                            ? "Archivo actualizado desde disco. La firma sigue siendo válida."
+                            : "Estado de firma: Firma inválida. El archivo cambió fuera de la aplicación.",
+                        isValid ? Brushes.LightGreen : Brushes.Red);
+                }
+                else
+                {
+                    SetStatus("Archivo actualizado desde disco. Firma pendiente.", Brushes.Orange);
+                }
+            }
+            catch (IOException)
+            {
+                SetStatus("El archivo cambió, pero todavía está siendo usado por otra aplicación. Intenta verificar de nuevo.", Brushes.Orange);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                SetStatus("El archivo cambió, pero no se tienen permisos para leerlo.", Brushes.Red);
+            }
+            finally
+            {
+                _isHandlingExternalChange = false;
+            }
         }
 
         private void RefreshHighlightedText()
