@@ -5,6 +5,7 @@ namespace ClientLocal.Models.Auth
     public class AuthUserDto
     {
         [JsonPropertyName("id")]
+        [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]
         public int Id { get; set; }
 
         [JsonPropertyName("name")]

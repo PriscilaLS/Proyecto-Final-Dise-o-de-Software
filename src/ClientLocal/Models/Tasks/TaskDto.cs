@@ -5,6 +5,7 @@ namespace ClientLocal.Models.Tasks
     public class TaskDto
     {
         [JsonPropertyName("id")]
+        [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]
         public int Id { get; set; }
 
         [JsonPropertyName("title")]

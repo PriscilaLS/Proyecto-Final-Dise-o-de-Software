@@ -5,6 +5,7 @@ namespace ClientLocal.Models.Courses
     public class CourseDto
     {
         [JsonPropertyName("id")]
+        [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]
         public int Id { get; set; }
 
         [JsonPropertyName("name")]

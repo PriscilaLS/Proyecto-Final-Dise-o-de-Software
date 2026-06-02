@@ -6,6 +6,21 @@ abstract class BasePage
 
     abstract protected function renderContent(): string;
 
+    protected function getCurrentUserRole(): string
+    {
+        return $_SESSION['user']['role'] ?? '';
+    }
+
+    protected function isTeacher(): bool
+    {
+        return $this->getCurrentUserRole() === 'teacher';
+    }
+
+    protected function isStudent(): bool
+    {
+        return $this->getCurrentUserRole() === 'student';
+    }
+
     public function render()
     {
         $content = $this->renderContent();

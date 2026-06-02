@@ -14,15 +14,22 @@ class CoursesPage extends BasePage
     {
         $service = new CourseService();
         $courses = $service->getCourses();
+        $isTeacher = $this->isTeacher();
+        $isStudent = $this->isStudent();
+
+        $primaryActions = "";
+        if ($isTeacher) {
+            $primaryActions .= "<a class='button-link' href='index.php?page=create-course'>Crear curso</a>";
+        }
+        if ($isStudent) {
+            $primaryActions .= "<a class='button-link' href='index.php?page=join-course'>Unirse a curso</a>";
+        }
 
         $html = "
         <div class='page-panel'>
             <div class='page-actions'>
                 <h1>Cursos</h1>
-                <div>
-                    <a class='button-link' href='index.php?page=create-course'>Crear curso</a>
-                    <a class='button-link' href='index.php?page=join-course'>Unirse a curso</a>
-                </div>
+                <div>{$primaryActions}</div>
             </div>
         ";
 
@@ -42,13 +49,17 @@ class CoursesPage extends BasePage
                 $description = htmlspecialchars($course['description'] ?? '', ENT_QUOTES, 'UTF-8');
                 $joinCode = htmlspecialchars($course['join_code'] ?? '', ENT_QUOTES, 'UTF-8');
 
+                $teacherAction = $isTeacher
+                    ? "<a href='index.php?page=create-task&course_id={$id}'>Crear tarea</a>"
+                    : "";
+
                 $html .= "
                 <div class='course-card'>
                     <h2>{$name}</h2>
                     <p>{$description}</p>
-                    <p><strong>Codigo:</strong> {$joinCode}</p>
+                    " . ($isTeacher ? "<p><strong>Codigo:</strong> {$joinCode}</p>" : "") . "
                     <a href='index.php?page=tasks&id={$id}'>Ver tareas</a>
-                    <a href='index.php?page=create-task&course_id={$id}'>Crear tarea</a>
+                    {$teacherAction}
                 </div>
                 ";
             }

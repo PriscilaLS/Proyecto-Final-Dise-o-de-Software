@@ -80,8 +80,17 @@ namespace ClientLocal.Views.Decorator
                 return;
             }
 
-            _signedScript.Sign();
-            RefreshSignatureInfo();
+            if (!ReloadScriptFromDisk())
+                return;
+
+            if (_signedScript!.HasStoredSignature())
+            {
+                SetStatus("Estado de firma: Ya existe una firma. Usa Regenerar Firma para reemplazarla.", Brushes.Orange);
+                return;
+            }
+
+            _signedScript!.Sign();
+            RefreshView();
             SetStatus("Estado de firma: Script firmado correctamente", Brushes.LightGreen);
         }
 
@@ -92,6 +101,9 @@ namespace ClientLocal.Views.Decorator
                 SetStatus("Primero debes cargar un script.", Brushes.Red);
                 return;
             }
+
+            if (!ReloadScriptFromDisk())
+                return;
 
             if (!_signedScript.HasStoredSignature())
             {
@@ -118,9 +130,31 @@ namespace ClientLocal.Views.Decorator
                 return;
             }
 
-            _signedScript.RegenerateSignature();
-            RefreshSignatureInfo();
+            if (!ReloadScriptFromDisk())
+                return;
+
+            _signedScript!.RegenerateSignature();
+            RefreshView();
             SetStatus("Estado de firma: Firma regenerada correctamente", Brushes.LightGreen);
+        }
+
+        private bool ReloadScriptFromDisk()
+        {
+            if (_basicScript == null)
+                return false;
+
+            var path = _basicScript.GetPath();
+            if (!File.Exists(path))
+            {
+                SetStatus("El archivo ya no existe en la ruta original.", Brushes.Red);
+                return false;
+            }
+
+            _basicScript = new BasicScript(path);
+            _signedScript = new SignedScriptDecorator(_basicScript);
+            _highlightedScript = new HighlightedScriptDecorator(_basicScript);
+            RefreshView();
+            return true;
         }
 
         private void RefreshView()
@@ -143,6 +177,7 @@ namespace ClientLocal.Views.Decorator
             if (_highlightedScript == null || _highlightedTextBlock == null)
                 return;
 
+            _highlightedTextBlock.Inlines ??= new InlineCollection();
             _highlightedTextBlock.Inlines.Clear();
 
             var segments = _highlightedScript.GetHighlightedSegments();

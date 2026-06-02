@@ -20,6 +20,7 @@ class Connection {
                     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
                 ]
             );
+            self::$instance->exec("SET time_zone = '-06:00'");
         }
         return self::$instance;
     }

@@ -12,6 +12,16 @@ class JoinCoursePage extends BasePage
 
     protected function renderContent(): string
     {
+        if (!$this->isStudent()) {
+            return "
+            <div class='card'>
+                <h1>Acceso restringido</h1>
+                <p class='error'>Solo los estudiantes pueden unirse a cursos.</p>
+                <a class='back-link' href='index.php?page=courses'>Volver a cursos</a>
+            </div>
+            ";
+        }
+
         $message = "";
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {

@@ -5,6 +5,7 @@ namespace ClientLocal.Models.Submission
     public class SubmitTaskResponse
     {
         [JsonPropertyName("id")]
+        [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]
         public int Id { get; set; }
 
         [JsonPropertyName("is_late")]

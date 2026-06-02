@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 
 namespace ClientLocal.Decorator;
 
@@ -73,6 +74,20 @@ public static class SignatureStore
         foreach (var line in File.ReadAllLines(CsvPath))
         {
             var parts = line.Split('\t');
+
+            if (parts.Length == 6 && parts[0] == "v2")
+            {
+                var filePath = Decode(parts[1]);
+                result[filePath] = new SignatureEntry(
+                    filePath,
+                    parts[2],
+                    parts[3],
+                    Decode(parts[4]),
+                    parts[5] == "1"
+                );
+                continue;
+            }
+
             if (parts.Length != 5) continue;
             result[parts[0]] = new SignatureEntry(
                 parts[0],
@@ -90,8 +105,21 @@ public static class SignatureStore
         Directory.CreateDirectory(Path.GetDirectoryName(CsvPath)!);
         var lines = new List<string>();
         foreach (var e in entries.Values)
-            lines.Add($"{e.FilePath}\t{e.Hash}\t{e.SignedAt}\t{e.Backup}\t{(e.IsCorrupt ? "1" : "0")}");
+        {
+            lines.Add(
+                $"v2\t{Encode(e.FilePath)}\t{e.Hash}\t{e.SignedAt}\t{Encode(e.Backup)}\t{(e.IsCorrupt ? "1" : "0")}");
+        }
         File.WriteAllLines(CsvPath, lines);
+    }
+
+    private static string Encode(string value)
+    {
+        return Convert.ToBase64String(Encoding.UTF8.GetBytes(value));
+    }
+
+    private static string Decode(string value)
+    {
+        return Encoding.UTF8.GetString(Convert.FromBase64String(value));
     }
 }
     

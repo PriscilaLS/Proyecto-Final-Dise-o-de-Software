@@ -15,12 +15,15 @@ class TasksPage extends BasePage
         $courseId = $_GET['id'] ?? 0;
         $service = new TaskService();
         $tasks = $service->getTasks($courseId);
+        $createTaskAction = $this->isTeacher()
+            ? "<a class='button-link' href='index.php?page=create-task&course_id={$courseId}'>Crear tarea</a>"
+            : "";
 
         $html = "
         <div class='page-panel'>
             <div class='page-actions'>
                 <h1>Tareas</h1>
-                <a class='button-link' href='index.php?page=create-task&course_id={$courseId}'>Crear tarea</a>
+                {$createTaskAction}
             </div>
         ";
 
@@ -40,12 +43,16 @@ class TasksPage extends BasePage
                 $description = htmlspecialchars($task['description'] ?? '', ENT_QUOTES, 'UTF-8');
                 $dueDate = htmlspecialchars($task['due_date'] ?? '', ENT_QUOTES, 'UTF-8');
 
+                $submissionAction = $this->isTeacher()
+                    ? "<a href='index.php?page=submissions&task_id={$id}'>Ver entregas</a>"
+                    : "";
+
                 $html .= "
                 <div class='task-card'>
                     <h2>{$title}</h2>
                     <p>{$description}</p>
                     <p><strong>Fecha limite:</strong> {$dueDate}</p>
-                    <a href='index.php?page=submissions&task_id={$id}'>Ver entregas</a>
+                    {$submissionAction}
                 </div>
                 ";
             }

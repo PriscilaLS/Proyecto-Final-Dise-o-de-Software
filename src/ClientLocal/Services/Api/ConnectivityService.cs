@@ -12,7 +12,7 @@ namespace ClientLocal.Services.Api
         {
             _httpClient = new HttpClient
             {
-                BaseAddress = new Uri("http://localhost/ProyectoFinalDS/src/Backend/app.php/")
+                BaseAddress = ApiSettings.BackendBaseUri
             };
         }
 

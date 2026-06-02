@@ -11,7 +11,7 @@ namespace ClientLocal.Services.Api
         {
             var client = new HttpClient
             {
-                BaseAddress = new Uri("http://localhost/ProyectoFinalDS/src/Backend/app.php/"),
+                BaseAddress = ApiSettings.BackendBaseUri,
                 Timeout = TimeSpan.FromSeconds(30)
             };
 

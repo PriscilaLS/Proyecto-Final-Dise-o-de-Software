@@ -12,6 +12,16 @@ class CreateTaskPage extends BasePage
 
     protected function renderContent(): string
     {
+        if (!$this->isTeacher()) {
+            return "
+            <div class='card'>
+                <h1>Acceso restringido</h1>
+                <p class='error'>Solo los profesores pueden crear tareas.</p>
+                <a class='back-link' href='index.php?page=courses'>Volver a cursos</a>
+            </div>
+            ";
+        }
+
         $courseId = $_GET['course_id'] ?? 0;
         $message = "";
 
