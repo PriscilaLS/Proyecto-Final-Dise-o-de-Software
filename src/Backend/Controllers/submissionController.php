@@ -1,10 +1,9 @@
 <?php
 /*
  * Controlador de entregas.
- * Recibe ZIPs de proyectos, lista entregas de una tarea y permite descargar archivos enviados.
+ * Recibe ZIPs de proyectos, lista entregas y permite descargar versiones.
  */
 require_once __DIR__ . '/../Services/submissionService.php';
-require_once __DIR__ . '/../Repositories/submissionRepository.php';
 require_once __DIR__ . '/../Middleware/authMiddleware.php';
 
 class SubmissionController {
@@ -55,8 +54,7 @@ class SubmissionController {
         AuthMiddleware::requireRole($payload, 'student');
 
         try {
-            $submissionRepo = new SubmissionRepository();
-            $submissions = $submissionRepo->findByTaskAndStudent($taskId, (int) $payload['id']);
+            $submissions = $this->submissionService->getMySubmissionsByTask($taskId, $payload);
             http_response_code(200);
             echo json_encode($submissions);
         } catch (Exception $e) {
@@ -72,6 +70,34 @@ class SubmissionController {
         try {
             $path = $this->submissionService->getDownloadPath($submissionId, $payload);
             // Para descargar ZIP, la respuesta ya no es JSON: es el archivo.
+            header('Content-Type: application/zip');
+            header('Content-Disposition: attachment; filename="' . basename($path) . '"');
+            header('Content-Length: ' . filesize($path));
+            readfile($path);
+        } catch (Exception $e) {
+            http_response_code(404);
+            echo json_encode(['error' => $e->getMessage()]);
+        }
+    }
+
+    public function getVersions(int $submissionId): void {
+        $payload = AuthMiddleware::handle();
+
+        try {
+            $versions = $this->submissionService->getVersionsBySubmission($submissionId, $payload);
+            http_response_code(200);
+            echo json_encode($versions);
+        } catch (Exception $e) {
+            http_response_code(403);
+            echo json_encode(['error' => $e->getMessage()]);
+        }
+    }
+
+    public function downloadVersion(int $versionId): void {
+        $payload = AuthMiddleware::handle();
+
+        try {
+            $path = $this->submissionService->getVersionDownloadPath($versionId, $payload);
             header('Content-Type: application/zip');
             header('Content-Disposition: attachment; filename="' . basename($path) . '"');
             header('Content-Length: ' . filesize($path));

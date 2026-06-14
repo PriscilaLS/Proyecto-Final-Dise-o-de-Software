@@ -8,7 +8,7 @@ class ApiClient
     {
         $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
         $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
-        $this->baseUrl = $scheme . '://' . $host . '/ProyectoFinalDS/src/Backend/app.php';
+        $this->baseUrl = 'http://localhost:5500/app.php';
     }
 
     private function request(string $method, string $endpoint, array $data = [], bool $auth = false)

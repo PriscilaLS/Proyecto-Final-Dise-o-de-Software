@@ -15,6 +15,7 @@ $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 // Apache entrega la URL completa. Quitamos el prefijo para comparar solo
 // la ruta de la API, por ejemplo: /courses/me.
 $path = str_replace('/ProyectoFinalDS/src/Backend/app.php', '', $path);
+$path = str_replace('/app.php', '', $path);
 
 $authController = new AuthController();
 $courseController = new CourseController();
@@ -43,8 +44,12 @@ if ($method === 'POST' && $path === '/auth/register') {
     $submissionController->getByTask((int) $matches[1]);
 } elseif ($method === 'GET' && preg_match('#^/tasks/(\d+)/my-submissions$#', $path, $matches)) {
     $submissionController->getMineByTask((int) $matches[1]);
+} elseif ($method === 'GET' && preg_match('#^/submissions/(\d+)/versions$#', $path, $matches)) {
+    $submissionController->getVersions((int) $matches[1]);
 } elseif ($method === 'GET' && preg_match('#^/submissions/(\d+)/download$#', $path, $matches)) {
     $submissionController->download((int) $matches[1]);
+} elseif ($method === 'GET' && preg_match('#^/submission-versions/(\d+)/download$#', $path, $matches)) {
+    $submissionController->downloadVersion((int) $matches[1]);
 } else {
     http_response_code(404);
     echo json_encode(['error' => 'Ruta no encontrada']);

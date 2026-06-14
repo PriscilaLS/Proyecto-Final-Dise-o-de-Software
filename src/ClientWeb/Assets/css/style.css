@@ -357,6 +357,34 @@ button:active,
     text-decoration: none;
 }
 
+.data-table a.table-button {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 8px;
+    background: rgba(56, 189, 248, 0.12);
+    border: 1px solid rgba(56, 189, 248, 0.28);
+}
+
+.history-summary {
+    margin-top: 18px;
+    padding: 16px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+}
+
+.history-summary h2 {
+    margin: 0 0 8px;
+    font-size: 18px;
+}
+
+.history-summary p {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 13px;
+    line-height: 1.5;
+}
+
 .badge {
     display: inline-block;
     padding: 3px 10px;
