@@ -3,7 +3,9 @@
 session_start();
 
 $submissionId = $_GET['id'] ?? null;
-if (!$submissionId || !isset($_SESSION['token'])) {
+$versionId = $_GET['version_id'] ?? null;
+
+if ((!$submissionId && !$versionId) || !isset($_SESSION['token'])) {
     http_response_code(400);
     echo 'Solicitud invalida.';
     exit;
@@ -11,7 +13,12 @@ if (!$submissionId || !isset($_SESSION['token'])) {
 
 $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
 $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
-$url = $scheme . '://' . $host . '/ProyectoFinalDS/src/Backend/app.php/submissions/' . urlencode($submissionId) . '/download';
+$downloadId = $versionId ?: $submissionId;
+$filenamePrefix = $versionId ? 'submission_version_' : 'submission_';
+$endpoint = $versionId
+    ? '/submission-versions/' . urlencode($versionId) . '/download'
+    : '/submissions/' . urlencode($submissionId) . '/download';
+$url = 'http://localhost:5500/app.php' . $endpoint;
 $ch = curl_init($url);
 
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -31,6 +38,6 @@ if ($status >= 400 || $response === false) {
 }
 
 header('Content-Type: ' . $contentType);
-header('Content-Disposition: attachment; filename="submission_' . $submissionId . '.zip"');
+header('Content-Disposition: attachment; filename="' . $filenamePrefix . $downloadId . '.zip"');
 header('Content-Length: ' . strlen($response));
 echo $response;

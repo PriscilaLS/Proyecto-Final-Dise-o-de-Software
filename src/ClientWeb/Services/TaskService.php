@@ -29,4 +29,9 @@ class TaskService
     {
         return $this->client->get('/tasks/' . $taskId . '/submissions', true);
     }
+
+    public function getSubmissionVersions($submissionId)
+    {
+        return $this->client->get('/submissions/' . $submissionId . '/versions', true);
+    }
 }
