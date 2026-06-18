@@ -24,6 +24,16 @@ class SubmissionVersionModel extends BaseModel {
         return (int) $this->db->lastInsertId();
     }
 
+    public function findById(int $versionId): ?array {
+        $stmt = $this->db->prepare(
+            "SELECT id, submission_id, version_number, file_path, submitted_at, is_late
+             FROM submission_versions
+             WHERE id = ?"
+        );
+        $stmt->execute([$versionId]);
+        return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+    }
+
     public function findBySubmissionId(int $submissionId): array {
         $stmt = $this->db->prepare(
             "SELECT id, submission_id, version_number, file_path, submitted_at, is_late

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -50,6 +51,42 @@ namespace ClientLocal.Services.Api
                     Error = $"Respuesta no JSON del backend: {body}"
                 };
             }
+        }
+
+        public async Task<List<SubmissionVersionDto>> GetMySubmissionsByTaskAsync(int taskId)
+        {
+            var response = await _httpClient.GetAsync($"tasks/{taskId}/my-submissions");
+            var body = await response.Content.ReadAsStringAsync();
+
+            if (!response.IsSuccessStatusCode)
+                throw new Exception($"Error {response.StatusCode}: {body}");
+
+            return JsonSerializer.Deserialize<List<SubmissionVersionDto>>(body, _jsonOptions)
+                   ?? new List<SubmissionVersionDto>();
+        }
+
+        public async Task<List<SubmissionSummaryDto>> GetSubmissionsByTaskAsync(int taskId)
+        {
+            var response = await _httpClient.GetAsync($"tasks/{taskId}/submissions");
+            var body = await response.Content.ReadAsStringAsync();
+
+            if (!response.IsSuccessStatusCode)
+                throw new Exception($"Error {response.StatusCode}: {body}");
+
+            return JsonSerializer.Deserialize<List<SubmissionSummaryDto>>(body, _jsonOptions)
+                   ?? new List<SubmissionSummaryDto>();
+        }
+
+        public async Task<List<SubmissionVersionDto>> GetVersionsBySubmissionAsync(int submissionId)
+        {
+            var response = await _httpClient.GetAsync($"submissions/{submissionId}/versions");
+            var body = await response.Content.ReadAsStringAsync();
+
+            if (!response.IsSuccessStatusCode)
+                throw new Exception($"Error {response.StatusCode}: {body}");
+
+            return JsonSerializer.Deserialize<List<SubmissionVersionDto>>(body, _jsonOptions)
+                   ?? new List<SubmissionVersionDto>();
         }
     }
 }
