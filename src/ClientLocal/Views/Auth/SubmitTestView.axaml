@@ -1,5 +1,6 @@
 ﻿<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:submission="clr-namespace:ClientLocal.Models.Submission"
              x:Class="ClientLocal.Views.Auth.SubmitTestView">
   <Border Background="#0f172a" Padding="28">
     <Grid RowDefinitions="Auto,Auto,Auto,*">
@@ -8,7 +9,7 @@
                    FontSize="34"
                    FontWeight="Bold"
                    Foreground="#f8fafc"/>
-        <TextBlock Text="Selecciona la carpeta del proyecto, firma los scripts y env&#237;a la entrega."
+        <TextBlock Text="Selecciona la carpeta del proyecto, firma los scripts, envia la entrega y revisa el historial de versiones."
                    Foreground="#9db3ca"
                    TextWrapping="Wrap"/>
       </StackPanel>
@@ -70,13 +71,20 @@
                 Foreground="#082f49"
                 FontWeight="Bold"
                 Click="SubmitButton_Click"/>
-        <Button Content="Probar clipboard"
+        <Button Content="Actualizar historial"
+                Width="170"
+                Height="44"
+                Background="#263449"
+                Foreground="#f8fafc"
+                FontWeight="Bold"
+                Click="RefreshHistoryButton_Click"/>
+        <Button Content="Abrir IDE"
                 Width="150"
                 Height="44"
                 Background="#263449"
                 Foreground="#f8fafc"
                 FontWeight="Bold"
-                Click="ClipboardTestButton_Click"/>
+                Click="OpenIdeButton_Click"/>
         <Button Content="Volver"
                 Width="120"
                 Height="44"
@@ -93,23 +101,70 @@
                 Click="BackToCoursesButton_Click"/>
       </StackPanel>
 
-      <Border Grid.Row="3"
-              Background="#162235"
-              BorderBrush="#24344f"
-              BorderThickness="1"
-              CornerRadius="16"
-              Padding="18">
-        <StackPanel Spacing="12">
-          <TextBlock x:Name="StatusTextBlock"
-                     Foreground="#f87171"
-                     FontWeight="SemiBold"
-                     TextWrapping="Wrap"/>
-          <TextBlock x:Name="ResultTextBlock"
-                     Foreground="#f8fafc"
-                     TextWrapping="Wrap"/>
-        </StackPanel>
-      </Border>
+      <Grid Grid.Row="3" ColumnDefinitions="*,*" ColumnSpacing="16">
+        <Border Background="#162235"
+                BorderBrush="#24344f"
+                BorderThickness="1"
+                CornerRadius="16"
+                Padding="18">
+          <StackPanel Spacing="12">
+            <TextBlock Text="Resultado de entrega"
+                       Foreground="#f8fafc"
+                       FontSize="18"
+                       FontWeight="Bold"/>
+            <TextBlock x:Name="StatusTextBlock"
+                       Foreground="#f87171"
+                       FontWeight="SemiBold"
+                       TextWrapping="Wrap"/>
+            <TextBlock x:Name="ResultTextBlock"
+                       Foreground="#f8fafc"
+                       TextWrapping="Wrap"/>
+          </StackPanel>
+        </Border>
+
+        <Border Grid.Column="1"
+                Background="#162235"
+                BorderBrush="#24344f"
+                BorderThickness="1"
+                CornerRadius="16"
+                Padding="18">
+          <Grid RowDefinitions="Auto,Auto,*" RowSpacing="10">
+            <TextBlock Text="Historial de versiones"
+                       Foreground="#f8fafc"
+                       FontSize="18"
+                       FontWeight="Bold"/>
+            <TextBlock x:Name="HistoryStatusTextBlock"
+                       Grid.Row="1"
+                       Foreground="#9db3ca"
+                       TextWrapping="Wrap"/>
+            <ListBox x:Name="VersionsListBox"
+                     Grid.Row="2"
+                     Background="Transparent"
+                     BorderThickness="0">
+              <ListBox.ItemTemplate>
+                <DataTemplate x:DataType="submission:SubmissionVersionDto">
+                  <Border Margin="0,0,0,10"
+                          Padding="12"
+                          Background="#0f172a"
+                          BorderBrush="#334155"
+                          BorderThickness="1"
+                          CornerRadius="12">
+                    <StackPanel Spacing="4">
+                      <TextBlock Text="{Binding DisplayText}"
+                                 Foreground="#f8fafc"
+                                 FontWeight="SemiBold"/>
+                      <TextBlock Text="{Binding FilePath}"
+                                 Foreground="#9db3ca"
+                                 FontSize="12"
+                                 TextWrapping="Wrap"/>
+                    </StackPanel>
+                  </Border>
+                </DataTemplate>
+              </ListBox.ItemTemplate>
+            </ListBox>
+          </Grid>
+        </Border>
+      </Grid>
     </Grid>
   </Border>
 </UserControl>
-

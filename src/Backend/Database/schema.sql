@@ -55,11 +55,23 @@ CREATE TABLE IF NOT EXISTS submissions (
   id INT AUTO_INCREMENT PRIMARY KEY,
   task_id INT NOT NULL,
   student_id INT NOT NULL,
-  file_path VARCHAR(255) NOT NULL,
-  submitted_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  is_late TINYINT(1) DEFAULT 0,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY submissions_task_student_unique (task_id, student_id),
   CONSTRAINT submissions_task_fk
     FOREIGN KEY (task_id) REFERENCES tasks(id),
   CONSTRAINT submissions_student_fk
     FOREIGN KEY (student_id) REFERENCES users(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE IF NOT EXISTS submission_versions (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  submission_id INT NOT NULL,
+  version_number INT NOT NULL,
+  file_path VARCHAR(255) NOT NULL,
+  submitted_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  is_late TINYINT(1) DEFAULT 0,
+  UNIQUE KEY submission_versions_unique (submission_id, version_number),
+  CONSTRAINT submission_versions_submission_fk
+    FOREIGN KEY (submission_id) REFERENCES submissions(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;

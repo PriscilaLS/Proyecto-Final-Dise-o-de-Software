@@ -49,9 +49,17 @@ public partial class MainWindow : Window
     {
         var courses = new CoursesTestView(_sessionService!);
         courses.CourseSelected += ShowTasks;
-        courses.IdeRequested += OpenIdeWindow;
         courses.DecoratorRequested += OpenDecoratorDemo;
+        courses.LogoutRequested += Logout;
         Content = courses;
+    }
+
+    private void Logout()
+    {
+        _sessionService?.Clear();
+        _sessionService = null;
+        _currentCourse = null;
+        ShowLogin();
     }
 
     private void OpenIdeWindow()
@@ -89,23 +97,8 @@ public partial class MainWindow : Window
                 ShowCourses();
         };
 
-        submit.ClipboardTestRequested += ShowClipboardTest;
+        submit.IdeRequested += OpenIdeWindow;
         submit.BackToCoursesRequested += ShowCourses;
         Content = submit;
-    }
-
-    private void ShowClipboardTest()
-    {
-        var clipboardTest = new ClipboardTestView();
-
-        clipboardTest.BackRequested += () =>
-        {
-            if (_currentCourse != null)
-                ShowTasks(_currentCourse);
-            else
-                ShowCourses();
-        };
-
-        Content = clipboardTest;
     }
 }

@@ -83,13 +83,13 @@
                      Margin="0,0,0,10"/>
           <TextBox x:Name="PlainTextBox"
                    Grid.Row="1"
-                   IsReadOnly="True"
                    AcceptsReturn="True"
                    TextWrapping="NoWrap"
                    Background="#0f172a"
                    Foreground="#f8fafc"
                    BorderBrush="#334155"
                    FontFamily="Consolas"
+                   TextChanged="PlainTextBox_TextChanged"
                    ScrollViewer.HorizontalScrollBarVisibility="Auto"
                    ScrollViewer.VerticalScrollBarVisibility="Auto"/>
         </Grid>

@@ -10,9 +10,9 @@ URL esperada:
 http://141.148.68.5/ProyectoFinalDS/src/ClientWeb/index.php
 ```
 
-## Preparacion local
+## Preparación local
 
-El cliente web fue ajustado para detectar automaticamente el host desde donde se abre.
+El cliente web fue ajustado para detectar automáticamente el host desde donde se abre.
 
 Si se abre en XAMPP:
 
@@ -40,7 +40,7 @@ http://141.148.68.5/ProyectoFinalDS/src/Backend/app.php
 
 ## Subir archivos a Oracle
 
-Desde PowerShell en Windows, en la raiz del proyecto:
+Desde PowerShell en Windows, en la raíz del proyecto:
 
 ```powershell
 scp -i "C:\Users\prisc\Downloads\eduide-backend.key" -r .\src\ClientWeb ubuntu@141.148.68.5:/home/ubuntu/ClientWeb
@@ -73,15 +73,15 @@ Abrir:
 http://141.148.68.5/ProyectoFinalDS/src/ClientWeb/index.php
 ```
 
-## Prueba minima
+## Prueba mínima
 
 1. Registrar usuario profesor.
-2. Iniciar sesion como profesor.
+2. Iniciar sesión como profesor.
 3. Crear curso.
 4. Crear tarea.
 5. Registrar usuario estudiante.
-6. Iniciar sesion como estudiante.
-7. Unirse al curso con el codigo.
+6. Iniciar sesión como estudiante.
+7. Unirse al curso con el código.
 8. Ver tareas.
 9. Enviar entrega desde cliente local.
 10. Volver al cliente web como profesor.
@@ -90,7 +90,7 @@ http://141.148.68.5/ProyectoFinalDS/src/ClientWeb/index.php
 
 ## Nota
 
-El backend debe estar funcionando antes de probar el cliente web remoto. La prueba rapida del backend es:
+El backend debe estar funcionando antes de probar el cliente web remoto. La prueba ráapida del backend es:
 
 ```bash
 curl http://141.148.68.5/ProyectoFinalDS/src/Backend/app.php/courses/me

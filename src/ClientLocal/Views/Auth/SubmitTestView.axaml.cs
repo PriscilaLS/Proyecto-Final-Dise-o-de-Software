@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,6 +8,7 @@ using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Avalonia.Platform.Storage;
+using ClientLocal.Models.Submission;
 using ClientLocal.Models.Tasks;
 using ClientLocal.Services.Api;
 using ClientLocal.Services.Editor;
@@ -27,10 +29,12 @@ namespace ClientLocal.Views.Auth
         private TextBox? _projectPathTextBox;
         private TextBlock? _statusTextBlock;
         private TextBlock? _resultTextBlock;
+        private TextBlock? _historyStatusTextBlock;
+        private ListBox? _versionsListBox;
 
         public event Action? BackRequested;
         public event Action? BackToCoursesRequested;
-        public event Action? ClipboardTestRequested;
+        public event Action? IdeRequested;
 
         public SubmitTestView(SessionService sessionService, TaskDto task)
         {
@@ -46,14 +50,23 @@ namespace ClientLocal.Views.Auth
             _projectPathTextBox = this.FindControl<TextBox>("ProjectPathTextBox");
             _statusTextBlock = this.FindControl<TextBlock>("StatusTextBlock");
             _resultTextBlock = this.FindControl<TextBlock>("ResultTextBlock");
+            _historyStatusTextBlock = this.FindControl<TextBlock>("HistoryStatusTextBlock");
+            _versionsListBox = this.FindControl<ListBox>("VersionsListBox");
 
             if (_titleTextBlock != null)
                 _titleTextBlock.Text = $"Entregar: {_task.Title}";
+
+            Loaded += SubmitTestView_Loaded;
         }
 
         private void InitializeComponent()
         {
             AvaloniaXamlLoader.Load(this);
+        }
+
+        private async void SubmitTestView_Loaded(object? sender, RoutedEventArgs e)
+        {
+            await LoadHistoryAsync();
         }
 
         private async void PickFolderButton_Click(object? sender, RoutedEventArgs e)
@@ -75,7 +88,7 @@ namespace ClientLocal.Views.Auth
 
         private void SignButton_Click(object? sender, RoutedEventArgs e)
         {
-            ResetMessages();
+            ResetMessages(clearResult: true);
 
             var projectPath = _projectPathTextBox?.Text?.Trim() ?? string.Empty;
 
@@ -93,7 +106,7 @@ namespace ClientLocal.Views.Auth
 
         private void ValidateButton_Click(object? sender, RoutedEventArgs e)
         {
-            ResetMessages();
+            ResetMessages(clearResult: true);
 
             var projectPath = _projectPathTextBox?.Text?.Trim() ?? string.Empty;
 
@@ -107,17 +120,17 @@ namespace ClientLocal.Views.Auth
 
                 if (!isValid)
                 {
-                    SetError($"Archivo con firma inv\u00e1lida: {Path.GetFileName(file)}");
+                    SetError($"Archivo con firma invalida: {Path.GetFileName(file)}");
                     return;
                 }
             }
 
-            SetSuccess("Validaci\u00f3n correcta. Todas las firmas son v\u00e1lidas.");
+            SetSuccess("Validacion correcta. Todas las firmas son validas.");
         }
 
         private async void SubmitButton_Click(object? sender, RoutedEventArgs e)
         {
-            ResetMessages();
+            ResetMessages(clearResult: true);
             if (sender is Button submitButton)
                 submitButton.IsEnabled = false;
 
@@ -137,7 +150,7 @@ namespace ClientLocal.Views.Auth
 
                 if (!isValid)
                 {
-                    SetError($"No se puede enviar. Firma inv\u00e1lida en: {Path.GetFileName(file)}");
+                    SetError($"No se puede enviar. Firma invalida en: {Path.GetFileName(file)}");
                     if (sender is Button invalidSignatureButton)
                         invalidSignatureButton.IsEnabled = true;
                     return;
@@ -163,17 +176,20 @@ namespace ClientLocal.Views.Auth
                 if (_resultTextBlock != null)
                 {
                     _resultTextBlock.Text =
-                        $"Entrega registrada.\n\n" +
-                        $"ID: {response.Id}\n" +
-                        $"Tardia: {response.IsLate}\n" +
-                        $"Fecha: {response.SubmittedAt}";
+                        $"Entrega registrada correctamente.\n\n" +
+                        $"ID de entrega: {response.SubmissionId}\n" +
+                        $"ID de version: {response.VersionId}\n" +
+                        $"Version enviada: v{response.VersionNumber}\n" +
+                        $"Fecha y hora: {response.SubmittedAt}\n" +
+                        $"Puntualidad: {response.StatusText}";
                 }
 
                 SetSuccess("Entrega enviada correctamente.");
+                await LoadHistoryAsync();
             }
             catch (TaskCanceledException)
             {
-                SetError("Error al enviar la entrega: el backend no respondi\u00f3 a tiempo.");
+                SetError("Error al enviar la entrega: el backend no respondio a tiempo.");
             }
             catch (Exception ex)
             {
@@ -191,9 +207,51 @@ namespace ClientLocal.Views.Auth
             }
         }
 
-        private void ClipboardTestButton_Click(object? sender, RoutedEventArgs e)
+        private async void RefreshHistoryButton_Click(object? sender, RoutedEventArgs e)
         {
-            ClipboardTestRequested?.Invoke();
+            await LoadHistoryAsync();
+        }
+
+        private async Task LoadHistoryAsync()
+        {
+            if (_historyStatusTextBlock != null)
+                _historyStatusTextBlock.Text = "Cargando historial...";
+
+            try
+            {
+                var versions = await _submissionRepository.GetMySubmissionsByTaskAsync(_task.Id);
+
+                if (_versionsListBox != null)
+                    _versionsListBox.ItemsSource = versions;
+
+                if (_historyStatusTextBlock != null)
+                {
+                    if (versions.Count == 0)
+                    {
+                        _historyStatusTextBlock.Text = "Todavia no hay entregas para esta tarea.";
+                    }
+                    else
+                    {
+                        var latest = versions[0];
+                        _historyStatusTextBlock.Text =
+                            $"Version mas reciente: v{latest.VersionNumber} | {latest.SubmittedAt} | {latest.StatusText}\n" +
+                            $"Total de versiones: {versions.Count}";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                if (_versionsListBox != null)
+                    _versionsListBox.ItemsSource = new List<SubmissionVersionDto>();
+
+                if (_historyStatusTextBlock != null)
+                    _historyStatusTextBlock.Text = $"No se pudo cargar el historial: {ex.Message}";
+            }
+        }
+
+        private void OpenIdeButton_Click(object? sender, RoutedEventArgs e)
+        {
+            IdeRequested?.Invoke();
         }
 
         private void BackButton_Click(object? sender, RoutedEventArgs e)
@@ -227,7 +285,7 @@ namespace ClientLocal.Views.Auth
             return true;
         }
 
-        private void ResetMessages()
+        private void ResetMessages(bool clearResult)
         {
             if (_statusTextBlock != null)
             {
@@ -235,7 +293,7 @@ namespace ClientLocal.Views.Auth
                 _statusTextBlock.Foreground = Brushes.Red;
             }
 
-            if (_resultTextBlock != null)
+            if (clearResult && _resultTextBlock != null)
                 _resultTextBlock.Text = string.Empty;
         }
 
@@ -258,4 +316,3 @@ namespace ClientLocal.Views.Auth
         }
     }
 }
-

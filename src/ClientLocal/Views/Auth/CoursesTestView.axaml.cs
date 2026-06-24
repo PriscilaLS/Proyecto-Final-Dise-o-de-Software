@@ -19,8 +19,8 @@ namespace ClientLocal.Views.Auth
         private TextBlock? _statusTextBlock;
 
         public event Action<CourseDto>? CourseSelected;
-        public event Action? IdeRequested;
         public event Action? DecoratorRequested;
+        public event Action? LogoutRequested;
 
         public CoursesTestView(SessionService sessionService)
         {
@@ -125,14 +125,14 @@ namespace ClientLocal.Views.Auth
             CourseSelected?.Invoke(selectedCourse);
         }
 
-        private void OpenIdeButton_Click(object? sender, RoutedEventArgs e)
-        {
-            IdeRequested?.Invoke();
-        }
-
         private void OpenDecoratorButton_Click(object? sender, RoutedEventArgs e)
         {
             DecoratorRequested?.Invoke();
+        }
+
+        private void LogoutButton_Click(object? sender, RoutedEventArgs e)
+        {
+            LogoutRequested?.Invoke();
         }
     }
 }

@@ -26,13 +26,6 @@
                   Foreground="#082f49"
                   FontWeight="Bold"
                   Click="OpenTasksButton_Click"/>
-          <Button Content="Abrir IDE"
-                  Width="120"
-                  Height="42"
-                  Background="#263449"
-                  Foreground="#f8fafc"
-                  FontWeight="Bold"
-                  Click="OpenIdeButton_Click"/>
           <Button Content="Decorator"
                   Width="120"
                   Height="42"
@@ -40,6 +33,13 @@
                   Foreground="#f8fafc"
                   FontWeight="Bold"
                   Click="OpenDecoratorButton_Click"/>
+          <Button Content="Cerrar sesi&#243;n"
+                  Width="140"
+                  Height="42"
+                  Background="#3b1f2a"
+                  Foreground="#fda4af"
+                  FontWeight="Bold"
+                  Click="LogoutButton_Click"/>
         </StackPanel>
       </Grid>
 
