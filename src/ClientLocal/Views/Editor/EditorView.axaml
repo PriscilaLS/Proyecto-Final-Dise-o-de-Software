@@ -211,6 +211,7 @@
               <MenuItem Header="Nuevo Script" Name="NewScriptMenu"/>
               <MenuItem Header="Nueva Carpeta" Name="NewFolderMenu"/>
               <MenuItem Header="Guardar Script" Name="SaveScriptMenu"/>
+              <MenuItem Header="Git controlado" Name="GitToolMenu"/>
             </MenuFlyout>
           </Button.Flyout>
         </Button>

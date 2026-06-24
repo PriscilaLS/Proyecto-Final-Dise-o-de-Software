@@ -5,6 +5,7 @@ using ClientLocal.Models.Tasks;
 using ClientLocal.Services.Session;
 using ClientLocal.Views.Auth;
 using ClientLocal.Views.Decorator;
+using ClientLocal.Views.VersionControl;
 
 namespace ClientLocal.Views;
 

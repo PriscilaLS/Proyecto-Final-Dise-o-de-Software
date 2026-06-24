@@ -12,6 +12,7 @@ using ClientLocal.Controls;
 using ClientLocal.Models;
 using ClientLocal.Services.Editor;
 using ClientLocal.Decorator;
+using ClientLocal.Views.VersionControl;
 
 namespace ClientLocal.Views;
 
@@ -94,6 +95,7 @@ public partial class EditorView : Window
         NewFolderMenu.Click += OnNewFolder;
         OpenProjectMenu.Click += OnOpenProject;
         SaveScriptMenu.Click += OnSaveScript;
+        GitToolMenu.Click += OnOpenGitTool;
         RunScriptBtn.Click += OnRunScript;
         ClearConsoleBtn.Click += (_, _) => ClearConsole();
         SidebarHomeBtn.Click += (_, _) => HomeRequested?.Invoke();
@@ -552,6 +554,12 @@ public partial class EditorView : Window
             onNewScript: () => OnNewScript(null, new RoutedEventArgs())
         );
         _watcherService.Watch(_projectService.CurrentProjectPath!);
+    }
+
+    private void OnOpenGitTool(object? sender, RoutedEventArgs e)
+    {
+        var gitTool = new GitToolWindow(_projectService.CurrentProjectPath);
+        gitTool.Show();
     }
 
     private async void OnOpenProject(object? sender, RoutedEventArgs e)
