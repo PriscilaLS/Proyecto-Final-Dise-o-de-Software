@@ -41,6 +41,9 @@ class CourseService {
     }
 
     public function joinCourse(string $joinCode, int $studentId): void {
+        $joinCode = strtoupper(trim($joinCode));
+        $joinCode = preg_replace('/\s+/u', '', $joinCode);
+
         // Busca el curso por código y evita matriculas duplicadas.
         $course = $this->courseRepo->findByJoinCode($joinCode);
         if (!$course) {
