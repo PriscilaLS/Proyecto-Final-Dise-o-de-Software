@@ -203,7 +203,7 @@ public partial class GitToolWindow : Window
 
         if (result.Success && string.IsNullOrWhiteSpace(result.Output))
         {
-            SetOutputText($"Archivo seleccionado: {selectedFile}\n\nEste archivo es nuevo o no tiene diff disponible todavia.");
+            SetOutputText($"Cambio seleccionado: {selectedFile}\n\nNo hay diferencias de texto para mostrar todavia. Si es un archivo nuevo, Git lo incluira en el proximo commit y despues aparecera en el historial.");
             return;
         }
 
@@ -225,7 +225,7 @@ public partial class GitToolWindow : Window
         if (!isRepo)
         {
             SetRepositoryInfo("Repositorio: no inicializado. Usa Git init para crear uno local.", Brushes.Orange);
-            SetOutputText("La carpeta seleccionada todavía no es un repositorio Git.\n\nOperación recomendada: Git init.");
+            SetOutputText("La carpeta seleccionada todavia no es un repositorio Git.\n\nOperacion recomendada: Git init para empezar a guardar historial local.");
             return;
         }
 
@@ -303,7 +303,7 @@ public partial class GitToolWindow : Window
         if (showOutput)
             SetOutput("git status --short", result);
         else if (files.Length == 0)
-            SetOutputText("No hay cambios pendientes. El proyecto esta limpio.");
+            SetOutputText("No hay cambios pendientes. Puedes abrir Historial para revisar las versiones guardadas.");
     }
 
     private async System.Threading.Tasks.Task<bool> EnsureRepositoryAsync()
@@ -313,7 +313,7 @@ public partial class GitToolWindow : Window
         if (string.IsNullOrWhiteSpace(path) || !Directory.Exists(path))
         {
             SetRepositoryInfo("Repositorio: selecciona una carpeta válida", Brushes.Orange);
-            SetOutputText("No hay una carpeta válida seleccionada.");
+            SetOutputText("Selecciona una carpeta valida para revisar cambios, diff e historial.");
             return false;
         }
 
@@ -353,7 +353,7 @@ public partial class GitToolWindow : Window
         _changedFilesListBox.ItemsSource = files;
 
         if (files.Count == 0)
-            SetSelectedFile("Sin archivo seleccionado");
+            SetSelectedFile("Sin cambios pendientes para comparar");
     }
 
     private void SetSelectedFile(string text)

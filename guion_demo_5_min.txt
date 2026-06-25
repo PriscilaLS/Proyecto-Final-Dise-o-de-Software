@@ -1,0 +1,190 @@
+GUION DEMO 5 MIN - EduIDE
+================================
+
+OBJETIVO DE LA DEMO
+Mostrar el flujo principal funcionando:
+1. El estudiante trabaja codigo Python en el IDE.
+2. El IDE ejecuta el programa.
+3. El estudiante entrega su proyecto.
+4. El sistema conserva historial.
+5. Git controlado permite ver cambios, hacer commit, push y pull.
+
+
+ANTES DE EMPEZAR LA CLASE
+-------------------------
+[ ] Tener XAMPP / backend listo si aplica.
+[ ] Tener ClientLocal.exe abierto o facil de abrir.
+[ ] Tener sesion lista o usuarios anotados.
+[ ] Tener un curso y una tarea ya creados.
+[ ] Tener el repositorio GitHub abierto en el navegador.
+[ ] Tener origin configurado en Git controlado.
+[ ] Tener un archivo Python listo para modificar.
+[ ] Tener este bloc de notas abierto.
+
+Archivo recomendado para demo:
+samples/demo/demo_python_ide.py
+
+
+SCRIPT PYTHON PARA PEGAR O MOSTRAR EN EL IDE
+--------------------------------------------
+from datetime import datetime
+
+
+def calcular_promedio(notas):
+    return sum(notas) / len(notas)
+
+
+def evaluar_estado(promedio):
+    if promedio >= 70:
+        return "Aprobado"
+
+    return "Requiere mejora"
+
+
+notas = [88, 92, 79, 95]
+promedio = calcular_promedio(notas)
+estado = evaluar_estado(promedio)
+
+print("Demo EduIDE - ejecucion Python")
+print("Fecha de prueba:", datetime.now().strftime("%Y-%m-%d %H:%M"))
+print("Notas:", notas)
+print("Promedio:", round(promedio, 2))
+print("Estado:", estado)
+
+
+MENSAJE DE APERTURA - 20 SEGUNDOS
+---------------------------------
+"Voy a demostrar el flujo principal del sistema. La idea es que un estudiante pueda
+trabajar codigo Python dentro del IDE, ejecutar su programa, entregar el proyecto y
+dejar evidencia de cambios mediante historial y Git controlado."
+
+
+MINUTO 0:20 A 1:20 - EJECUTAR PYTHON EN EL IDE
+----------------------------------------------
+PASOS:
+1. Abrir el Client Local.
+2. Ir al editor.
+3. Abrir samples/demo/demo_python_ide.py o pegar el script.
+4. Presionar Ejecutar.
+5. Mostrar la salida en consola.
+
+QUE DECIR:
+"Aqui se ve que el IDE no solo edita archivos, tambien ejecuta Python y muestra
+la salida dentro de la aplicacion."
+
+SI FALLA:
+"Si Python no esta en PATH, igual el modulo queda demostrado a nivel de editor.
+En mi maquina de prueba normalmente se ejecuta desde este boton."
+
+
+MINUTO 1:20 A 2:20 - ENTREGA / HISTORIAL
+---------------------------------------
+PASOS:
+1. Ir a la pantalla de tareas o entregas.
+2. Seleccionar la tarea preparada.
+3. Seleccionar la carpeta del proyecto.
+4. Enviar entrega.
+5. Abrir historial y mostrar versiones.
+
+QUE DECIR:
+"Cada envio queda registrado como una version. Esto permite evidenciar reenvios
+y revisar cual fue la entrega mas reciente."
+
+SI YA HAY UNA ENTREGA HECHA:
+"Para ahorrar tiempo, ya tengo entregas registradas. Aqui se puede ver el historial
+de versiones enviadas por el estudiante."
+
+
+MINUTO 2:20 A 3:30 - GIT: VER CAMBIOS Y COMMIT
+----------------------------------------------
+PASOS:
+1. Abrir Git controlado.
+2. Seleccionar la carpeta del proyecto.
+3. Clic en Actualizar cambios.
+4. Seleccionar el archivo modificado.
+5. Mostrar "Diff e historial".
+6. Escribir Summary:
+   Demo defensa: actualiza script Python
+7. Description:
+   Cambio usado para demostrar commit y push desde EduIDE.
+8. Clic en Commit.
+
+QUE DECIR:
+"Esta pantalla esta pensada para que el estudiante vea cambios pendientes,
+revise el diff y guarde una version local con commit."
+
+
+MINUTO 3:30 A 4:20 - GIT: PUSH
+------------------------------
+PASOS:
+1. Verificar que Origin este configurado.
+2. Clic en Push.
+3. Mostrar que el boton cambia o que el resultado indica exito.
+4. Abrir GitHub en navegador y actualizar para ver el commit.
+
+QUE DECIR:
+"Aqui se sube el commit local al repositorio remoto. Esto demuestra que el trabajo
+no queda solo en la maquina, sino que tambien puede sincronizarse con GitHub."
+
+SI FALLA POR CREDENCIALES:
+"Este paso depende de las credenciales de GitHub del equipo. El modulo ya ejecuta
+el push; si GitHub pide autenticacion, se resuelve fuera del IDE por seguridad."
+
+
+MINUTO 4:20 A 4:50 - GIT: PULL
+------------------------------
+OPCION RECOMENDADA PARA QUE SE VEA BIEN:
+Antes de la demo, hacer un cambio pequeno directo en GitHub, por ejemplo en README.md:
+"Cambio remoto para demo de pull"
+
+PASOS:
+1. En GitHub, confirmar que existe un cambio remoto.
+2. Volver a EduIDE.
+3. Clic en Pull.
+4. Mostrar que el cambio bajo al repositorio local.
+
+QUE DECIR:
+"Pull permite traer cambios remotos al repositorio local. En el proyecto lo dejamos
+controlado con fast-forward para evitar mezclas riesgosas o conflictos durante la demo."
+
+SI NO HAY CAMBIO REMOTO:
+"En este momento no hay cambios nuevos en GitHub, por eso pull indica que el
+repositorio ya esta actualizado."
+
+
+CIERRE - 10 SEGUNDOS
+--------------------
+"En resumen, el flujo clave queda demostrado: editar y ejecutar Python, entregar,
+consultar historial, revisar diferencias, guardar versiones y sincronizar con GitHub."
+
+
+PLAN B SI SE VA EL TIEMPO
+------------------------
+Si solo quedan 2 minutos:
+1. Ejecutar Python.
+2. Mostrar historial de entregas.
+3. Mostrar Git: diff + historial.
+4. Decir que push/pull ya estan implementados y mostrar los botones.
+
+
+PLAN B SI FALLA INTERNET
+------------------------
+1. No intentar arreglar Wi-Fi en vivo.
+2. Mostrar commit local.
+3. Mostrar historial Git local.
+4. Decir:
+   "La parte local funciona sin internet. Push y pull dependen de conexion y
+   credenciales, por eso se validan cuando GitHub esta disponible."
+
+
+FRASES CORTAS PARA NO PERDERME
+------------------------------
+- "Primero demuestro ejecucion de Python dentro del IDE."
+- "Ahora muestro la entrega del proyecto."
+- "Aqui se ve el historial de versiones enviadas."
+- "Ahora reviso cambios pendientes con diff."
+- "Guardo una version local con commit."
+- "Subo esa version a GitHub con push."
+- "Traigo cambios remotos con pull."
+- "El alcance final prioriza el flujo academico principal y control de versiones."
+
