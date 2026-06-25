@@ -29,7 +29,9 @@ curl_setopt($ch, CURLOPT_HTTPHEADER, [
 $response = curl_exec($ch);
 $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 $contentType = curl_getinfo($ch, CURLINFO_CONTENT_TYPE) ?: 'application/zip';
-curl_close($ch);
+if (PHP_VERSION_ID < 80000 && is_resource($ch)) {
+    curl_close($ch);
+}
 
 if ($status >= 400 || $response === false) {
     http_response_code($status ?: 500);

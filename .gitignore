@@ -19,3 +19,6 @@ src/Backend/Submissions/*
 # Zips y logs
 *.zip
 run.log
+
+# Runtime uploads
+src/Backend/uploads/

@@ -57,11 +57,16 @@ class TasksPage extends BasePage
                 ";
 
                 if (!empty($attachmentPath)) {
+                    $attachmentUrl = "task_attachment.php?task_id={$id}";
                     $html .= "
                     <p>
                         <strong>Archivo de apoyo:</strong>
-                        {$attachmentPath}
+                        <a href='{$attachmentUrl}'>Descargar archivo de apoyo</a>
                     </p>
+                    ";
+                } else {
+                    $html .= "
+                    <p><strong>Archivo de apoyo:</strong> Sin archivo de apoyo</p>
                     ";
                 }
 

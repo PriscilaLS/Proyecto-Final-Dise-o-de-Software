@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using Avalonia.Platform.Storage;
 using ClientLocal.Models.Courses;
 using ClientLocal.Models.Tasks;
 using ClientLocal.Services.Api;
@@ -19,7 +20,10 @@ namespace ClientLocal.Views.Auth
         private TextBlock? _titleTextBlock;
         private ListBox? _tasksListBox;
         private TextBlock? _detailsTextBlock;
+        private TextBlock? _attachmentTextBlock;
         private TextBlock? _statusTextBlock;
+        private Button? _downloadAttachmentButton;
+        private TaskDto? _selectedTask;
 
         public event Action<TaskDto>? SubmitRequested;
         public event Action? BackToCoursesRequested;
@@ -35,7 +39,9 @@ namespace ClientLocal.Views.Auth
             _titleTextBlock = this.FindControl<TextBlock>("TitleTextBlock");
             _tasksListBox = this.FindControl<ListBox>("TasksListBox");
             _detailsTextBlock = this.FindControl<TextBlock>("DetailsTextBlock");
+            _attachmentTextBlock = this.FindControl<TextBlock>("AttachmentTextBlock");
             _statusTextBlock = this.FindControl<TextBlock>("StatusTextBlock");
+            _downloadAttachmentButton = this.FindControl<Button>("DownloadAttachmentButton");
 
             if (_titleTextBlock != null)
                 _titleTextBlock.Text = $"Tareas de: {_course.Name}";
@@ -82,10 +88,22 @@ namespace ClientLocal.Views.Auth
         {
             if (_tasksListBox?.SelectedItem is not TaskDto selectedTask)
             {
+                _selectedTask = null;
+
                 if (_detailsTextBlock != null)
                     _detailsTextBlock.Text = string.Empty;
+
+                if (_attachmentTextBlock != null)
+                    _attachmentTextBlock.Text = string.Empty;
+
+                if (_downloadAttachmentButton != null)
+                    _downloadAttachmentButton.IsVisible = false;
+
                 return;
             }
+
+            _selectedTask = selectedTask;
+            var hasAttachment = !string.IsNullOrWhiteSpace(selectedTask.AttachmentPath);
 
             if (_detailsTextBlock != null)
             {
@@ -94,6 +112,22 @@ namespace ClientLocal.Views.Auth
                     $"Descripci\u00f3n: {selectedTask.Description}\n\n" +
                     $"Fecha l\u00edmite: {selectedTask.DueDate}";
             }
+
+            if (_attachmentTextBlock != null)
+            {
+                _attachmentTextBlock.Text = hasAttachment
+                    ? "Archivo de apoyo: disponible"
+                    : "Archivo de apoyo: Sin archivo de apoyo";
+            }
+
+            if (_downloadAttachmentButton != null)
+            {
+                _downloadAttachmentButton.IsVisible = hasAttachment;
+                _downloadAttachmentButton.IsEnabled = hasAttachment;
+            }
+
+            if (_statusTextBlock != null)
+                _statusTextBlock.Text = string.Empty;
         }
 
         private void GoToSubmitButton_Click(object? sender, RoutedEventArgs e)
@@ -106,6 +140,56 @@ namespace ClientLocal.Views.Auth
             }
 
             SubmitRequested?.Invoke(selectedTask);
+        }
+
+        private async void DownloadAttachmentButton_Click(object? sender, RoutedEventArgs e)
+        {
+            if (_selectedTask == null || string.IsNullOrWhiteSpace(_selectedTask.AttachmentPath))
+            {
+                if (_statusTextBlock != null)
+                    _statusTextBlock.Text = "La tarea no tiene archivo de apoyo.";
+                return;
+            }
+
+            var topLevel = TopLevel.GetTopLevel(this);
+            if (topLevel?.StorageProvider == null)
+            {
+                if (_statusTextBlock != null)
+                    _statusTextBlock.Text = "No se pudo abrir el dialogo para guardar el archivo.";
+                return;
+            }
+
+            if (sender is Button button)
+                button.IsEnabled = false;
+
+            try
+            {
+                var download = await _taskRepository.DownloadAttachmentAsync(_selectedTask.Id);
+                var destination = await topLevel.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
+                {
+                    Title = "Guardar archivo de apoyo",
+                    SuggestedFileName = download.FileName
+                });
+
+                if (destination == null)
+                    return;
+
+                await using var stream = await destination.OpenWriteAsync();
+                await stream.WriteAsync(download.Content, 0, download.Content.Length);
+
+                if (_statusTextBlock != null)
+                    _statusTextBlock.Text = "Archivo de apoyo descargado correctamente.";
+            }
+            catch (Exception ex)
+            {
+                if (_statusTextBlock != null)
+                    _statusTextBlock.Text = $"No se pudo descargar el archivo de apoyo. Detalle: {ex.Message}";
+            }
+            finally
+            {
+                if (sender is Button finalButton)
+                    finalButton.IsEnabled = true;
+            }
         }
 
         private void BackToCoursesButton_Click(object? sender, RoutedEventArgs e)
@@ -135,4 +219,3 @@ namespace ClientLocal.Views.Auth
         }
     }
 }
-

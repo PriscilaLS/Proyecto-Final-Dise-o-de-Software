@@ -47,6 +47,9 @@
             <TextBlock x:Name="DetailsTextBlock"
                        Foreground="#f8fafc"
                        TextWrapping="Wrap"/>
+            <TextBlock x:Name="AttachmentTextBlock"
+                       Foreground="#cbd5e1"
+                       TextWrapping="Wrap"/>
             <TextBlock x:Name="StatusTextBlock"
                        Foreground="#f87171"
                        TextWrapping="Wrap"/>
@@ -54,6 +57,15 @@
           <StackPanel Grid.Column="1"
                       Spacing="10"
                       VerticalAlignment="Center">
+            <Button x:Name="DownloadAttachmentButton"
+                    Content="Descargar archivo de apoyo"
+                    Width="190"
+                    Height="44"
+                    Background="#38bdf8"
+                    Foreground="#082f49"
+                    FontWeight="Bold"
+                    IsVisible="False"
+                    Click="DownloadAttachmentButton_Click"/>
             <Button Content="Ir a entrega"
                     Width="150"
                     Height="44"
@@ -74,4 +86,3 @@
     </Grid>
   </Border>
 </UserControl>
-

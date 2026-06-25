@@ -35,7 +35,9 @@ class ApiClient
         $error = curl_error($ch);
         $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
-        curl_close($ch);
+        if (PHP_VERSION_ID < 80000 && is_resource($ch)) {
+            curl_close($ch);
+        }
 
         if ($response === false) {
             return ['error' => 'No se pudo conectar con el backend: ' . $error];

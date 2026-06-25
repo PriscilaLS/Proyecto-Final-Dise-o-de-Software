@@ -13,7 +13,7 @@ class TaskModel extends BaseModel {
     public function create(array $data): int {
         $stmt = $this->db->prepare(
             "INSERT INTO tasks (course_id, title, description, due_date, attachment_path)
-             VALUES (?, ?, ?, ?)"
+             VALUES (?, ?, ?, ?, ?)"
         );
         $stmt->execute([
             $data['course_id'],

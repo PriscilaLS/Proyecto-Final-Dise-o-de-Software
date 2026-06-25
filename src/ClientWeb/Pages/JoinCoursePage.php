@@ -25,7 +25,7 @@ class JoinCoursePage extends BasePage
         $message = "";
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $joinCode = $_POST['join_code'] ?? '';
+            $joinCode = strtoupper(trim($_POST['join_code'] ?? ''));
             $service = new CourseService();
             $response = $service->joinCourse($joinCode);
 
@@ -41,7 +41,7 @@ class JoinCoursePage extends BasePage
             <h1>Unirse a Curso</h1>
             {$message}
             <form method='POST'>
-                <input type='text' name='join_code' placeholder='Codigo del curso' required>
+                <input type='text' name='join_code' placeholder='Codigo del curso' maxlength='20' style='text-transform: uppercase;' required>
                 <button type='submit'>Unirse</button>
             </form>
             <a class='back-link' href='index.php?page=courses'>Volver a cursos</a>
