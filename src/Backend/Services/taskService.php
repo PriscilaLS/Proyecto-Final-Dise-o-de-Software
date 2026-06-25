@@ -31,7 +31,8 @@ class TaskService {
             'course_id' => $courseId,
             'title' => $data['title'],
             'description' => $data['description'] ?? null,
-            'due_date' => $data['due_date']
+            'due_date' => $data['due_date'],
+            'attachment_path' => $data['attachment_path'] ?? null
         ]);
 
         return [
