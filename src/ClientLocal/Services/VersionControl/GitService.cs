@@ -62,6 +62,107 @@ public class GitService
         return RunGitAsync(repositoryPath, "log", "--pretty=format:%h %s%n%b%n", "-10");
     }
 
+    public Task<GitCommandResult> GetRemoteAsync(string repositoryPath)
+    {
+        return RunGitAsync(repositoryPath, "remote", "get-url", "origin");
+    }
+
+    public async Task<GitCommandResult> SetRemoteAsync(string repositoryPath, string remoteUrl)
+    {
+        if (string.IsNullOrWhiteSpace(remoteUrl))
+        {
+            return new GitCommandResult
+            {
+                Success = false,
+                Error = "Escribe la URL del repositorio remoto antes de configurar origin."
+            };
+        }
+
+        var currentRemote = await GetRemoteAsync(repositoryPath);
+        if (currentRemote.Success)
+            return await RunGitAsync(repositoryPath, "remote", "set-url", "origin", remoteUrl.Trim());
+
+        return await RunGitAsync(repositoryPath, "remote", "add", "origin", remoteUrl.Trim());
+    }
+
+    public async Task<GitCommandResult> PushAsync(string repositoryPath)
+    {
+        var branch = await GetCurrentBranchAsync(repositoryPath);
+        if (string.IsNullOrWhiteSpace(branch) || branch == "Sin rama" || branch == "HEAD sin rama")
+        {
+            return new GitCommandResult
+            {
+                Success = false,
+                Error = "No se puede hacer push porque no hay una rama activa."
+            };
+        }
+
+        return await RunGitAsync(repositoryPath, "push", "-u", "origin", branch);
+    }
+
+    public Task<GitCommandResult> PullAsync(string repositoryPath)
+    {
+        return RunGitAsync(repositoryPath, "pull", "--ff-only");
+    }
+
+    public Task<GitCommandResult> FetchAsync(string repositoryPath)
+    {
+        return RunGitAsync(repositoryPath, "fetch", "origin");
+    }
+
+    public async Task<GitSyncStatus> GetSyncStatusAsync(string repositoryPath)
+    {
+        var upstream = await RunGitAsync(repositoryPath, "rev-parse", "--abbrev-ref", "--symbolic-full-name", "@{u}");
+        if (!upstream.Success)
+        {
+            return new GitSyncStatus
+            {
+                HasUpstream = false,
+                Message = "La rama todavia no tiene upstream. Usa Push para publicarla."
+            };
+        }
+
+        var fetch = await FetchAsync(repositoryPath);
+        if (!fetch.Success)
+        {
+            return new GitSyncStatus
+            {
+                HasUpstream = true,
+                Message = fetch.DisplayText
+            };
+        }
+
+        var counts = await RunGitAsync(repositoryPath, "rev-list", "--left-right", "--count", "HEAD...@{u}");
+        if (!counts.Success)
+        {
+            return new GitSyncStatus
+            {
+                HasUpstream = true,
+                Message = counts.DisplayText
+            };
+        }
+
+        var parts = counts.Output
+            .Split(new[] { ' ', '\t', '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+
+        if (parts.Length < 2 || !int.TryParse(parts[0], out var ahead) || !int.TryParse(parts[1], out var behind))
+        {
+            return new GitSyncStatus
+            {
+                HasUpstream = true,
+                Message = "No se pudo calcular la diferencia entre local y remoto."
+            };
+        }
+
+        return new GitSyncStatus
+        {
+            HasUpstream = true,
+            Ahead = ahead,
+            Behind = behind,
+            Message = "Sincronizacion revisada."
+        };
+    }
+
     public async Task<GitCommandResult> CommitAsync(string repositoryPath, string message)
     {
         if (string.IsNullOrWhiteSpace(message))

@@ -7,7 +7,7 @@
         MinHeight="680"
         Title="Git controlado - EduIDE">
   <Border Background="#0f172a" Padding="28">
-    <Grid RowDefinitions="Auto,Auto,*,Auto" RowSpacing="16">
+    <Grid RowDefinitions="Auto,Auto,*,Auto,Auto" RowSpacing="16">
       <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
         <StackPanel Spacing="6">
           <TextBlock Text="Git controlado"
@@ -20,20 +20,24 @@
         </StackPanel>
 
         <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Top">
-          <Button Content="Pull"
+          <Button x:Name="PullButton"
+                  Content="Pull"
                   Width="86"
                   Height="38"
                   Background="#263449"
-                  Foreground="#94a3b8"
+                  Foreground="#f8fafc"
                   IsEnabled="False"
-                  ToolTip.Tip="Pull descarga cambios desde un repositorio remoto. Esta demo lo bloquea para evitar codigo externo durante una evaluacion."/>
-          <Button Content="Push"
+                  ToolTip.Tip="Descarga cambios desde GitHub solo si no hay conflictos. Usa git pull --ff-only."
+                  Click="PullButton_Click"/>
+          <Button x:Name="PushButton"
+                  Content="Push"
                   Width="86"
                   Height="38"
                   Background="#263449"
-                  Foreground="#94a3b8"
+                  Foreground="#f8fafc"
                   IsEnabled="False"
-                  ToolTip.Tip="Push sube commits a GitHub u otro remoto. Esta demo mantiene Git local para que sea controlado y defendible."/>
+                  ToolTip.Tip="Sube los commits locales al origin configurado. Puede pedir credenciales de GitHub si no has iniciado sesion."
+                  Click="PushButton_Click"/>
         </StackPanel>
       </Grid>
 
@@ -190,6 +194,57 @@
       </Grid>
 
       <Border Grid.Row="3"
+              Background="#162235"
+              BorderBrush="#24344f"
+              BorderThickness="1"
+              CornerRadius="16"
+              Padding="16">
+        <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,Auto,Auto" RowSpacing="8" ColumnSpacing="12">
+          <TextBlock Text="Remoto GitHub"
+                     Foreground="#f8fafc"
+                     FontWeight="Bold"/>
+          <TextBlock x:Name="RemoteInfoTextBlock"
+                     Grid.Column="1"
+                     Grid.ColumnSpan="2"
+                     Foreground="#9db3ca"
+                     Text="Origin: no revisado"
+                     TextAlignment="Right"
+                     TextWrapping="Wrap"/>
+
+          <TextBox x:Name="RemoteUrlTextBox"
+                   Grid.Row="1"
+                   Height="42"
+                   CornerRadius="10"
+                   Background="#0f172a"
+                   Foreground="#f8fafc"
+                   BorderBrush="#334155"
+                   PlaceholderText="https://github.com/usuario/repositorio.git"/>
+
+          <Button Grid.Row="1"
+                  Grid.Column="1"
+                  Content="Revisar origin"
+                  Width="130"
+                  Height="42"
+                  Background="#263449"
+                  Foreground="#f8fafc"
+                  FontWeight="Bold"
+                  ToolTip.Tip="Muestra la URL remota configurada como origin."
+                  Click="CheckRemoteButton_Click"/>
+
+          <Button Grid.Row="1"
+                  Grid.Column="2"
+                  Content="Configurar origin"
+                  Width="150"
+                  Height="42"
+                  Background="#38bdf8"
+                  Foreground="#082f49"
+                  FontWeight="Bold"
+                  ToolTip.Tip="Guarda la URL de GitHub como origin. Todavia no hace push ni pull."
+                  Click="SetRemoteButton_Click"/>
+        </Grid>
+      </Border>
+
+      <Border Grid.Row="4"
               Background="#162235"
               BorderBrush="#24344f"
               BorderThickness="1"
