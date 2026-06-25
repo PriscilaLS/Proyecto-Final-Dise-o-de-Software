@@ -26,7 +26,7 @@ class SubmissionVersionModel extends BaseModel {
 
     public function findById(int $versionId): ?array {
         $stmt = $this->db->prepare(
-            "SELECT id, submission_id, version_number, file_path, submitted_at, is_late
+            "SELECT id, id AS version_id, submission_id, version_number, file_path, submitted_at, is_late
              FROM submission_versions
              WHERE id = ?"
         );
@@ -36,7 +36,7 @@ class SubmissionVersionModel extends BaseModel {
 
     public function findBySubmissionId(int $submissionId): array {
         $stmt = $this->db->prepare(
-            "SELECT id, submission_id, version_number, file_path, submitted_at, is_late
+            "SELECT id, id AS version_id, submission_id, version_number, file_path, submitted_at, is_late
              FROM submission_versions
              WHERE submission_id = ?
              ORDER BY version_number DESC"
@@ -47,7 +47,7 @@ class SubmissionVersionModel extends BaseModel {
 
     public function findLatestBySubmissionId(int $submissionId): ?array {
         $stmt = $this->db->prepare(
-            "SELECT id, submission_id, version_number, file_path, submitted_at, is_late
+            "SELECT id, id AS version_id, submission_id, version_number, file_path, submitted_at, is_late
              FROM submission_versions
              WHERE submission_id = ?
              ORDER BY version_number DESC

@@ -79,11 +79,11 @@ class SubmissionService {
 
         return [
             // id se conserva como alias para clientes existentes.
-            'id' => $submissionId,
-            'submission_id' => $submissionId,
-            'version_id' => $versionId,
-            'version_number' => $versionNumber,
-            'is_late' => $isLate,
+            'id' => (int) $submissionId,
+            'submission_id' => (int) $submissionId,
+            'version_id' => (int) $versionId,
+            'version_number' => (int) $versionNumber,
+            'is_late' => (bool) $isLate,
             'submitted_at' => $submittedAt
         ];
     }

@@ -4,6 +4,7 @@ using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using ClientLocal.Models.Submission;
 
@@ -19,7 +20,8 @@ namespace ClientLocal.Services.Api
             _httpClient = httpClient;
             _jsonOptions = new JsonSerializerOptions
             {
-                PropertyNameCaseInsensitive = true
+                PropertyNameCaseInsensitive = true,
+                NumberHandling = JsonNumberHandling.AllowReadingFromString
             };
         }
 
@@ -41,14 +43,16 @@ namespace ClientLocal.Services.Api
 
                 if (!response.IsSuccessStatusCode)
                     result.Error ??= $"Error {response.StatusCode}: {body}";
+                else if (result.SubmissionId <= 0 || result.VersionId <= 0 || result.VersionNumber <= 0)
+                    result.Error = $"Respuesta de entrega incompleta del backend: {body}";
 
                 return result;
             }
-            catch
+            catch (JsonException ex)
             {
                 return new SubmitTaskResponse
                 {
-                    Error = $"Respuesta no JSON del backend: {body}"
+                    Error = $"Respuesta JSON invalida del backend: {ex.Message}. Respuesta: {body}"
                 };
             }
         }

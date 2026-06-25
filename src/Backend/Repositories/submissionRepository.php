@@ -61,7 +61,7 @@ class SubmissionRepository extends BaseRepository {
              ORDER BY latest.submitted_at DESC"
         );
         $stmt->execute([$taskId]);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return array_map([$this, 'normalizeSubmissionSummary'], $stmt->fetchAll(PDO::FETCH_ASSOC));
     }
 
     public function findByTaskAndStudent(int $taskId, int $studentId): array {
@@ -81,11 +81,12 @@ class SubmissionRepository extends BaseRepository {
              ORDER BY sv.version_number DESC"
         );
         $stmt->execute([$taskId, $studentId]);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return array_map([$this, 'normalizeSubmissionVersion'], $stmt->fetchAll(PDO::FETCH_ASSOC));
     }
 
     public function findSubmissionByTaskAndStudent(int $taskId, int $studentId): ?array {
-        return $this->submissionModel->findByTaskAndStudent($taskId, $studentId);
+        $submission = $this->submissionModel->findByTaskAndStudent($taskId, $studentId);
+        return $submission ? $this->normalizeSubmission($submission) : null;
     }
 
     public function createSubmission(int $taskId, int $studentId): int {
@@ -117,15 +118,17 @@ class SubmissionRepository extends BaseRepository {
     }
 
     public function findVersionsBySubmissionId(int $submissionId): array {
-        return $this->versionModel->findBySubmissionId($submissionId);
+        return array_map([$this, 'normalizeSubmissionVersion'], $this->versionModel->findBySubmissionId($submissionId));
     }
 
     public function findLatestVersionBySubmissionId(int $submissionId): ?array {
-        return $this->versionModel->findLatestBySubmissionId($submissionId);
+        $version = $this->versionModel->findLatestBySubmissionId($submissionId);
+        return $version ? $this->normalizeSubmissionVersion($version) : null;
     }
 
     public function findVersionById(int $versionId): ?array {
-        return $this->versionModel->findById($versionId);
+        $version = $this->versionModel->findById($versionId);
+        return $version ? $this->normalizeSubmissionVersion($version) : null;
     }
 
     public function findTaskById(int $taskId): ?array {
@@ -219,5 +222,43 @@ class SubmissionRepository extends BaseRepository {
         if ($this->submissionModel->db->inTransaction()) {
             $this->submissionModel->db->rollBack();
         }
+    }
+
+    private function normalizeSubmission(array $row): array {
+        foreach (['id', 'task_id', 'student_id'] as $field) {
+            if (array_key_exists($field, $row) && $row[$field] !== null) {
+                $row[$field] = (int) $row[$field];
+            }
+        }
+
+        return $row;
+    }
+
+    private function normalizeSubmissionVersion(array $row): array {
+        foreach (['id', 'submission_id', 'version_id', 'version_number', 'task_id', 'student_id'] as $field) {
+            if (array_key_exists($field, $row) && $row[$field] !== null) {
+                $row[$field] = (int) $row[$field];
+            }
+        }
+
+        if (array_key_exists('is_late', $row)) {
+            $row['is_late'] = (bool) $row['is_late'];
+        }
+
+        return $row;
+    }
+
+    private function normalizeSubmissionSummary(array $row): array {
+        foreach (['id', 'submission_id', 'task_id', 'student_id', 'latest_version_id', 'latest_version_number', 'total_versions'] as $field) {
+            if (array_key_exists($field, $row) && $row[$field] !== null) {
+                $row[$field] = (int) $row[$field];
+            }
+        }
+
+        if (array_key_exists('is_late', $row)) {
+            $row['is_late'] = (bool) $row['is_late'];
+        }
+
+        return $row;
     }
 }
