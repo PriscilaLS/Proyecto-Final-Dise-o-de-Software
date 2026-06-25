@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Controls;
@@ -15,6 +16,8 @@ using ClientLocal.Services.Editor;
 using ClientLocal.Services.Files;
 using ClientLocal.Services.Session;
 
+
+
 namespace ClientLocal.Views.Auth
 {
     public partial class SubmitTestView : UserControl
@@ -27,6 +30,7 @@ namespace ClientLocal.Views.Auth
 
         private TextBlock? _titleTextBlock;
         private TextBox? _projectPathTextBox;
+        private TextBox? _externalFileTextBox;
         private TextBlock? _statusTextBlock;
         private TextBlock? _resultTextBlock;
         private TextBlock? _historyStatusTextBlock;
@@ -48,6 +52,7 @@ namespace ClientLocal.Views.Auth
 
             _titleTextBlock = this.FindControl<TextBlock>("TitleTextBlock");
             _projectPathTextBox = this.FindControl<TextBox>("ProjectPathTextBox");
+            _externalFileTextBox = this.FindControl<TextBox>("ExternalFileTextBox");
             _statusTextBlock = this.FindControl<TextBlock>("StatusTextBlock");
             _resultTextBlock = this.FindControl<TextBlock>("ResultTextBlock");
             _historyStatusTextBlock = this.FindControl<TextBlock>("HistoryStatusTextBlock");
@@ -84,6 +89,32 @@ namespace ClientLocal.Views.Auth
             var selected = folders.FirstOrDefault();
             if (selected != null && _projectPathTextBox != null)
                 _projectPathTextBox.Text = selected.Path.LocalPath;
+        }
+
+        private async void PickExternalFileButton_Click(object? sender,RoutedEventArgs e)
+        {
+            var topLevel = TopLevel.GetTopLevel(this);
+
+            if (topLevel?.StorageProvider == null)
+                return;
+
+            var files =
+                await topLevel.StorageProvider
+                .OpenFilePickerAsync(
+                    new FilePickerOpenOptions
+                    {
+                        Title = "Selecciona archivo adicional",
+                        AllowMultiple = false
+                    });
+
+            var selected = files.FirstOrDefault();
+
+            if (selected != null &&
+                _externalFileTextBox != null)
+            {
+                _externalFileTextBox.Text =
+                    selected.Path.LocalPath;
+            }
         }
 
         private void SignButton_Click(object? sender, RoutedEventArgs e)
@@ -158,11 +189,24 @@ namespace ClientLocal.Views.Auth
             }
 
             string? zipPath = null;
+            var externalFile =_externalFileTextBox?.Text?.Trim();
 
             try
             {
                 SetSuccess("Preparando ZIP para la entrega...");
                 zipPath = await Task.Run(() => _compressionService.CreateProjectZip(projectPath));
+
+                if (!string.IsNullOrWhiteSpace(externalFile) && File.Exists(externalFile))
+                {
+                    using var archive =
+                        System.IO.Compression.ZipFile.Open(
+                            zipPath,
+                            System.IO.Compression.ZipArchiveMode.Update);
+
+                    archive.CreateEntryFromFile(
+                        externalFile,
+                        Path.GetFileName(externalFile));
+                }
 
                 SetSuccess("Enviando entrega al backend...");
                 var response = await _submissionRepository.SubmitProjectAsync(_task.Id, zipPath);
