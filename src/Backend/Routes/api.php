@@ -38,6 +38,8 @@ if ($method === 'POST' && $path === '/auth/register') {
     $taskController->getByCourse((int) $matches[1]);
 } elseif ($method === 'POST' && preg_match('#^/courses/(\d+)/tasks$#', $path, $matches)) {
     $taskController->create((int) $matches[1]);
+} elseif ($method === 'GET' && preg_match('#^/tasks/(\d+)/attachment$#', $path, $matches)) {
+    $taskController->downloadAttachment((int) $matches[1]);
 } elseif ($method === 'POST' && preg_match('#^/tasks/(\d+)/submit$#', $path, $matches)) {
     $submissionController->submit((int) $matches[1]);
 } elseif ($method === 'GET' && preg_match('#^/tasks/(\d+)/submissions$#', $path, $matches)) {
