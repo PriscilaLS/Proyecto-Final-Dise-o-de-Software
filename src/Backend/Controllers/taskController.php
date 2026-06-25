@@ -36,7 +36,7 @@ class TaskController {
         $data = json_decode(file_get_contents('php://input'), true);
         if (!$data || !isset($data['title'], $data['due_date'])) {
             http_response_code(400);
-            echo json_encode(['error' => 'Título y fecha límite son requeridos']);
+            echo json_encode(['error' => 'Debe ingresar un título y una fecha límite para crear la tarea.']);
             return;
         }
 

@@ -16,5 +16,8 @@ namespace ClientLocal.Models.Tasks
 
         [JsonPropertyName("due_date")]
         public string? DueDate { get; set; }
+
+        [JsonPropertyName("attachment_path")]
+        public string? AttachmentPath { get; set; }
     }
 }

@@ -46,6 +46,7 @@ CREATE TABLE IF NOT EXISTS tasks (
   title VARCHAR(100) NOT NULL,
   description TEXT NULL,
   due_date DATETIME NOT NULL,
+  attachment_path VARCHAR(255) NULL,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT tasks_course_fk
     FOREIGN KEY (course_id) REFERENCES courses(id)

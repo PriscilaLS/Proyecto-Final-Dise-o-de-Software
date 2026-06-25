@@ -42,6 +42,8 @@ class TasksPage extends BasePage
                 $title = htmlspecialchars($task['title'] ?? '', ENT_QUOTES, 'UTF-8');
                 $description = htmlspecialchars($task['description'] ?? '', ENT_QUOTES, 'UTF-8');
                 $dueDate = htmlspecialchars($task['due_date'] ?? '', ENT_QUOTES, 'UTF-8');
+                $attachmentPath = htmlspecialchars($task['attachment_path'] ?? '',ENT_QUOTES,'UTF-8'
+);
 
                 $submissionAction = $this->isTeacher()
                     ? "<a href='index.php?page=submissions&task_id={$id}'>Ver entregas</a>"
@@ -52,8 +54,21 @@ class TasksPage extends BasePage
                     <h2>{$title}</h2>
                     <p>{$description}</p>
                     <p><strong>Fecha limite:</strong> {$dueDate}</p>
+                ";
+
+                if (!empty($attachmentPath)) {
+                    $html .= "
+                    <p>
+                        <strong>Archivo de apoyo:</strong>
+                        {$attachmentPath}
+                    </p>
+                    ";
+                }
+
+                $html .= "
                     {$submissionAction}
                 </div>
+
                 ";
             }
         }

@@ -61,7 +61,8 @@ namespace ClientLocal.Views.Tasks
             DetalleTextBlock.Text =
                 $"Nombre: {selectedTask.Nombre}\n\n" +
                 $"Descripción: {selectedTask.Descripcion}\n\n" +
-                $"Fecha límite: {selectedTask.FechaLimite}";
+                $"Fecha límite: {selectedTask.FechaLimite}"+
+                $"Archivo de apoyo: {selectedTask.AttachmentPath}";
         }
     }
 }

@@ -29,9 +29,10 @@ class CreateTaskPage extends BasePage
             $title = $_POST['title'] ?? '';
             $description = $_POST['description'] ?? '';
             $dueDate = $_POST['due_date'] ?? '';
+            $attachmentPath = $_POST['attachment_path'] ?? '' ;
 
             $service = new TaskService();
-            $response = $service->createTask($courseId, $title, $description, $dueDate);
+            $response = $service->createTask($courseId, $title, $description, $dueDate, $attachmentPath );
 
             if (isset($response['error'])) {
                 $message = "<p class='error'>{$response['error']}</p>";
@@ -44,10 +45,16 @@ class CreateTaskPage extends BasePage
         <div class='card'>
             <h1>Crear Tarea</h1>
             {$message}
-            <form method='POST'>
+            <form method='POST'> 
                 <input type='text' name='title' placeholder='Titulo' required>
                 <textarea name='description' placeholder='Descripcion' required></textarea>
                 <input type='datetime-local' name='due_date' required>
+                <label>Archivo de apoyo</label>
+                <input
+                    type='text'
+                    name='attachment_path'
+                    placeholder='Ej: Guia_Proyecto_Final.pdf'
+                >
                 <button type='submit'>Crear Tarea</button>
             </form>
             <a class='back-link' href='index.php?page=tasks&id={$courseId}'>Volver a tareas</a>
