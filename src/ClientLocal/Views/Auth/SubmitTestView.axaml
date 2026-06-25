@@ -74,7 +74,6 @@
                   Foreground="#082f49"
                   FontWeight="Bold"
                   Click="PickExternalFileButton_Click"/>
-      </Grid>
         </Grid>
       </Border>
 
