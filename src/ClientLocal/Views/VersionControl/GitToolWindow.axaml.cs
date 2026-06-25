@@ -23,6 +23,10 @@ public partial class GitToolWindow : Window
     private TextBox? _outputTextBox;
     private ListBox? _changedFilesListBox;
     private TextBlock? _selectedFileTextBlock;
+    private TextBox? _remoteUrlTextBox;
+    private TextBlock? _remoteInfoTextBlock;
+    private Button? _pushButton;
+    private Button? _pullButton;
 
     public GitToolWindow() : this(null)
     {
@@ -41,6 +45,10 @@ public partial class GitToolWindow : Window
         _outputTextBox = this.FindControl<TextBox>("OutputTextBox");
         _changedFilesListBox = this.FindControl<ListBox>("ChangedFilesListBox");
         _selectedFileTextBlock = this.FindControl<TextBlock>("SelectedFileTextBlock");
+        _remoteUrlTextBox = this.FindControl<TextBox>("RemoteUrlTextBox");
+        _remoteInfoTextBlock = this.FindControl<TextBlock>("RemoteInfoTextBlock");
+        _pushButton = this.FindControl<Button>("PushButton");
+        _pullButton = this.FindControl<Button>("PullButton");
 
         Loaded += GitToolWindow_Loaded;
     }
@@ -116,6 +124,48 @@ public partial class GitToolWindow : Window
         SetOutput("git log -10", result);
     }
 
+    private async void CheckRemoteButton_Click(object? sender, RoutedEventArgs e)
+    {
+        if (!await EnsureRepositoryAsync())
+            return;
+
+        await RefreshRemoteAsync(showOutput: true);
+    }
+
+    private async void SetRemoteButton_Click(object? sender, RoutedEventArgs e)
+    {
+        if (!await EnsureRepositoryAsync())
+            return;
+
+        var remoteUrl = _remoteUrlTextBox?.Text ?? string.Empty;
+        var result = await _gitService.SetRemoteAsync(GetProjectPath(), remoteUrl);
+        SetOutput("git remote origin", result);
+        await RefreshRemoteAsync();
+    }
+
+    private async void PushButton_Click(object? sender, RoutedEventArgs e)
+    {
+        if (!await EnsureRepositoryAsync())
+            return;
+
+        var result = await _gitService.PushAsync(GetProjectPath());
+        SetOutput("git push -u origin ramaActual", result);
+        await RefreshRemoteAsync();
+        await RefreshSyncStatusAsync();
+    }
+
+    private async void PullButton_Click(object? sender, RoutedEventArgs e)
+    {
+        if (!await EnsureRepositoryAsync())
+            return;
+
+        var result = await _gitService.PullAsync(GetProjectPath());
+        SetOutput("git pull --ff-only", result);
+        await DetectRepositoryAsync();
+        await RefreshChangesAsync();
+        await RefreshSyncStatusAsync();
+    }
+
     private async void CommitButton_Click(object? sender, RoutedEventArgs e)
     {
         if (!await EnsureRepositoryAsync())
@@ -181,6 +231,56 @@ public partial class GitToolWindow : Window
 
         var branch = await _gitService.GetCurrentBranchAsync(path);
         SetRepositoryInfo($"Repositorio: detectado | Rama actual: {branch}", Brushes.LightGreen);
+        await RefreshRemoteAsync();
+    }
+
+    private async System.Threading.Tasks.Task RefreshRemoteAsync(bool showOutput = false)
+    {
+        var result = await _gitService.GetRemoteAsync(GetProjectPath());
+
+        if (!result.Success || string.IsNullOrWhiteSpace(result.Output))
+        {
+            SetRemoteInfo("Origin: no configurado", Brushes.Orange);
+            SetPushEnabled(false);
+            SetPullEnabled(false);
+            SetButtonText(_pushButton, "Push");
+            SetButtonText(_pullButton, "Pull");
+            if (showOutput)
+                SetOutput("git remote get-url origin", result);
+            return;
+        }
+
+        var remote = result.Output.Trim();
+        SetRemoteInfo($"Origin: {remote}", Brushes.LightGreen);
+        await RefreshSyncStatusAsync();
+
+        if (_remoteUrlTextBox != null)
+            _remoteUrlTextBox.Text = remote;
+
+        if (showOutput)
+            SetOutput("git remote get-url origin", result);
+    }
+
+    private async System.Threading.Tasks.Task RefreshSyncStatusAsync()
+    {
+        var sync = await _gitService.GetSyncStatusAsync(GetProjectPath());
+
+        if (!sync.HasUpstream)
+        {
+            SetButtonText(_pushButton, "Push");
+            SetButtonText(_pullButton, "Pull");
+            SetPushEnabled(true);
+            SetPullEnabled(false);
+            return;
+        }
+
+        SetButtonText(_pushButton, sync.Ahead > 0 ? $"Push ↑ {sync.Ahead}" : "Push");
+        SetButtonText(_pullButton, sync.Behind > 0 ? $"Pull ↓ {sync.Behind}" : "Pull");
+        SetPushEnabled(sync.Ahead > 0);
+        SetPullEnabled(sync.Behind > 0);
+
+        if (!string.IsNullOrWhiteSpace(sync.Message) && sync.Message != "Sincronizacion revisada.")
+            SetRemoteInfo($"Origin: {sync.Message}", Brushes.Orange);
     }
 
     private async System.Threading.Tasks.Task RefreshChangesAsync(bool showOutput = false)
@@ -260,6 +360,41 @@ public partial class GitToolWindow : Window
     {
         if (_selectedFileTextBlock != null)
             _selectedFileTextBlock.Text = text;
+    }
+
+    private void SetRemoteInfo(string text, IBrush color)
+    {
+        if (_remoteInfoTextBlock == null)
+            return;
+
+        _remoteInfoTextBlock.Text = text;
+        _remoteInfoTextBlock.Foreground = color;
+    }
+
+    private void SetPushEnabled(bool enabled)
+    {
+        if (_pushButton == null)
+            return;
+
+        _pushButton.IsEnabled = enabled;
+        _pushButton.Background = enabled ? Brushes.DeepSkyBlue : Brushes.DarkSlateGray;
+        _pushButton.Foreground = enabled ? Brushes.Black : Brushes.LightSlateGray;
+    }
+
+    private void SetPullEnabled(bool enabled)
+    {
+        if (_pullButton == null)
+            return;
+
+        _pullButton.IsEnabled = enabled;
+        _pullButton.Background = enabled ? Brushes.DeepSkyBlue : Brushes.DarkSlateGray;
+        _pullButton.Foreground = enabled ? Brushes.Black : Brushes.LightSlateGray;
+    }
+
+    private static void SetButtonText(Button? button, string text)
+    {
+        if (button != null)
+            button.Content = text;
     }
 
     private void SetOutput(string title, GitCommandResult result)
