@@ -1,17 +1,34 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Platform;
+using Avalonia.Media;
 using Avalonia.Media.Imaging;
+using Avalonia.VisualTree;
 
 namespace ClientLocal.Services.Editor;
 
 public class ExplorerService
 {
+    private static readonly HashSet<string> IgnoredFolders = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ".git",
+        ".vs",
+        ".idea",
+        ".vscode",
+        "bin",
+        "obj",
+        "node_modules",
+        "packages",
+        "__pycache__"
+    };
+
     private readonly TreeView _treeView;
     private readonly IProjectService _projectService;
     private readonly IIntegrityService _integrityService;
@@ -20,6 +37,7 @@ public class ExplorerService
     private readonly Action<string, string> _onTabPathChanged;
     private readonly Func<string, Task<string>> _onRenameRequest;
     private readonly Action<string> _onFileDeleted;
+    private readonly Func<string, IReadOnlyList<string>, Task> _onExternalFilesDropped;
     private Action? _onNewFolder;
     private Action? _onNewScript;
 
@@ -30,7 +48,8 @@ public class ExplorerService
         Func<string, string, Task> onMoveError,
         Action<string, string> onTabPathChanged,
         Func<string, Task<string>> onRenameRequest,
-        Action<string> onFileDeleted)
+        Action<string> onFileDeleted,
+        Func<string, IReadOnlyList<string>, Task> onExternalFilesDropped)
         
     {
         _treeView         = treeView;
@@ -39,7 +58,12 @@ public class ExplorerService
         _onTabPathChanged = onTabPathChanged;
         _onRenameRequest   = onRenameRequest;
         _onFileDeleted = onFileDeleted;
+        _onExternalFilesDropped = onExternalFilesDropped;
         _integrityService = integrityService;
+
+        DragDrop.SetAllowDrop(_treeView, true);
+        _treeView.AddHandler(DragDrop.DropEvent, OnTreeDrop);
+        _treeView.AddHandler(DragDrop.DragOverEvent, OnTreeDragOver);
     }
 
     public void Show(string folder, Action? onNewFolder = null, Action? onNewScript = null)
@@ -76,12 +100,19 @@ public class ExplorerService
             return;
 
         string[] directories;
-        string[] pythonFiles;
+        string[] files;
 
         try
         {
-            directories = Directory.GetDirectories(folder);
-            pythonFiles = Directory.GetFiles(folder, "*.py");
+            directories = Directory.GetDirectories(folder)
+                .Where(ShouldShowDirectory)
+                .OrderBy(Path.GetFileName, StringComparer.OrdinalIgnoreCase)
+                .ToArray();
+
+            files = Directory.GetFiles(folder)
+                .Where(ShouldShowFile)
+                .OrderBy(Path.GetFileName, StringComparer.OrdinalIgnoreCase)
+                .ToArray();
         }
         catch (IOException)
         {
@@ -99,11 +130,40 @@ public class ExplorerService
             AddDragDrop(dirNode);
             parent.Items.Add(dirNode);
         }
-        foreach (var file in pythonFiles)
+        foreach (var file in files)
         {
             var fileNode = new TreeViewItem { Header = CreateFileHeader(file), Tag = file };
             AddDragDrop(fileNode);
             parent.Items.Add(fileNode);
+        }
+    }
+
+    private static bool ShouldShowDirectory(string path)
+    {
+        var name = Path.GetFileName(path);
+        if (IgnoredFolders.Contains(name))
+            return false;
+
+        return IsVisibleFileSystemEntry(path);
+    }
+
+    private static bool ShouldShowFile(string path)
+    {
+        return IsVisibleFileSystemEntry(path);
+    }
+
+    private static bool IsVisibleFileSystemEntry(string path)
+    {
+        try
+        {
+            var attributes = File.GetAttributes(path);
+            return !attributes.HasFlag(FileAttributes.Hidden)
+                && !attributes.HasFlag(FileAttributes.System)
+                && !attributes.HasFlag(FileAttributes.ReparsePoint);
+        }
+        catch
+        {
+            return false;
         }
     }
 
@@ -113,7 +173,9 @@ public class ExplorerService
         node.AddHandler(DragDrop.DropEvent, OnTreeItemDrop);
         node.AddHandler(DragDrop.DragOverEvent, (_, e) =>
         {
-            e.DragEffects = DragDropEffects.Move;
+            e.DragEffects = HasExternalFiles(e)
+                ? DragDropEffects.Copy
+                : DragDropEffects.Move;
             e.Handled     = true;
         });
 
@@ -170,25 +232,31 @@ public class ExplorerService
             
             renameItem.Click += async (_, _) =>
             {
-                string content = File.ReadAllText(nodePath);
-                bool wasCorrupt = !_integrityService.Validate(nodePath, content);
+                bool isPythonFile = string.Equals(Path.GetExtension(nodePath), ".py", StringComparison.OrdinalIgnoreCase);
+                string? content = isPythonFile ? File.ReadAllText(nodePath) : null;
+                bool wasCorrupt = isPythonFile && !_integrityService.Validate(nodePath, content!);
                 
-                string? newName = await _onRenameRequest(Path.GetFileNameWithoutExtension(nodePath));
+                string currentName = isPythonFile ? Path.GetFileNameWithoutExtension(nodePath) : Path.GetFileName(nodePath);
+                string? newName = await _onRenameRequest(currentName);
                 if (string.IsNullOrWhiteSpace(newName)) return;
 
-                string newPath = Path.Combine(Path.GetDirectoryName(nodePath)!, newName + ".py");
+                string targetName = isPythonFile ? newName + ".py" : Path.GetFileName(newName);
+                string newPath = Path.Combine(Path.GetDirectoryName(nodePath)!, targetName);
                 if (newPath == nodePath) return;
                 
                 try
                 {
                     File.Move(nodePath, newPath);
-                    _integrityService.RemoveSignature(nodePath);
-                    _integrityService.MoveBackup(nodePath, newPath);
+                    if (isPythonFile)
+                    {
+                        _integrityService.RemoveSignature(nodePath);
+                        _integrityService.MoveBackup(nodePath, newPath);
 
-                    if (!wasCorrupt)
-                        _integrityService.Sign(newPath, File.ReadAllText(newPath));
-                    else
-                        _integrityService.MarkAsCorrupt(newPath);
+                        if (!wasCorrupt)
+                            _integrityService.Sign(newPath, File.ReadAllText(newPath));
+                        else
+                            _integrityService.MarkAsCorrupt(newPath);
+                    }
                     
                     _onTabPathChanged(nodePath, newPath);
                     Show(_projectService.CurrentProjectPath!);
@@ -222,12 +290,24 @@ public class ExplorerService
     private async void OnTreeItemDrop(object? sender, DragEventArgs e)
     {
         if (sender is not TreeViewItem targetNode) return;
-        string? sourcePath = e.DataTransfer.TryGetText();
         string? targetPath = targetNode.Tag as string;
 
-        if (sourcePath == null || targetPath == null || sourcePath == targetPath) return;
+        if (targetPath == null) return;
 
-        string destFolder = Directory.Exists(targetPath) ? targetPath : Path.GetDirectoryName(targetPath)!;
+        var externalFiles = GetExternalFilePaths(e);
+        if (externalFiles.Count > 0)
+        {
+            e.Handled = true;
+            string targetDirectory = GetDropTargetDirectory(targetPath);
+            await _onExternalFilesDropped(targetDirectory, externalFiles);
+            return;
+        }
+
+        string? sourcePath = e.DataTransfer.TryGetText();
+
+        if (sourcePath == null || sourcePath == targetPath) return;
+
+        string destFolder = GetDropTargetDirectory(targetPath);
         string destPath   = Path.Combine(destFolder, Path.GetFileName(sourcePath)!);
         if (destPath == sourcePath) return;
 
@@ -247,16 +327,81 @@ public class ExplorerService
         e.Handled = true;
     }
 
+    private async void OnTreeDrop(object? sender, DragEventArgs e)
+    {
+        if (e.Handled) return;
+        if (IsDropOnTreeViewItem(e.Source)) return;
+
+        var externalFiles = GetExternalFilePaths(e);
+        if (externalFiles.Count == 0) return;
+
+        string? projectPath = _projectService.CurrentProjectPath;
+        if (string.IsNullOrWhiteSpace(projectPath) || !Directory.Exists(projectPath))
+            return;
+
+        e.Handled = true;
+        await _onExternalFilesDropped(projectPath, externalFiles);
+    }
+
+    private void OnTreeDragOver(object? sender, DragEventArgs e)
+    {
+        if (!HasExternalFiles(e)) return;
+
+        e.DragEffects = DragDropEffects.Copy;
+        e.Handled = true;
+    }
+
+    private static bool HasExternalFiles(DragEventArgs e) => GetExternalFilePaths(e).Count > 0;
+
+    private static bool IsDropOnTreeViewItem(object? source)
+    {
+        if (source is not Visual visual)
+            return false;
+
+        return visual is TreeViewItem
+            || visual.GetVisualAncestors().OfType<TreeViewItem>().Any();
+    }
+
+    private static IReadOnlyList<string> GetExternalFilePaths(DragEventArgs e)
+    {
+        try
+        {
+            return e.DataTransfer.TryGetFiles()?
+                .Select(file =>
+                {
+                    try { return file.Path?.LocalPath; }
+                    catch { return null; }
+                })
+                .Where(path => !string.IsNullOrWhiteSpace(path) && File.Exists(path))
+                .Select(path => path!)
+                .ToArray()
+                ?? Array.Empty<string>();
+        }
+        catch
+        {
+            return Array.Empty<string>();
+        }
+    }
+
+    private static string GetDropTargetDirectory(string targetPath)
+    {
+        return Directory.Exists(targetPath)
+            ? targetPath
+            : Path.GetDirectoryName(targetPath)!;
+    }
+
     private Control CreateFolderHeader(string path) => new StackPanel
     {
         Orientation = Avalonia.Layout.Orientation.Horizontal,
         Spacing     = 8,
         Children =
         {
-            new Image
+            new TextBlock
             {
-                Source = new Bitmap(AssetLoader.Open(new Uri("avares://ClientLocal/Assets/folder.png"))),
-                Width  = 16, Height = 16
+                Text = "📁",
+                Width = 18,
+                FontSize = 14,
+                FontFamily = FontFamily.Default
             },
             new TextBlock
             {
@@ -273,11 +418,7 @@ public class ExplorerService
         Spacing     = 8,
         Children =
         {
-            new Image
-            {
-                Source = new Bitmap(AssetLoader.Open(new Uri("avares://ClientLocal/Assets/python.png"))),
-                Width  = 16, Height = 16
-            },
+            CreateFileIcon(path),
             new TextBlock
             {
                 Text         = Path.GetFileName(path),
@@ -286,6 +427,41 @@ public class ExplorerService
             }
         }
     };
+
+    private Control CreateFileIcon(string path)
+    {
+        if (string.Equals(Path.GetExtension(path), ".py", StringComparison.OrdinalIgnoreCase))
+        {
+            return new Image
+            {
+                Source = new Bitmap(AssetLoader.Open(new Uri("avares://ClientLocal/Assets/python.png"))),
+                Width  = 16,
+                Height = 16
+            };
+        }
+
+        return new TextBlock
+        {
+            Text = GetFileIcon(path),
+            Width = 18,
+            FontSize = 14,
+            FontFamily = FontFamily.Default
+        };
+    }
+
+    private static string GetFileIcon(string path)
+    {
+        string extension = Path.GetExtension(path).ToLowerInvariant();
+        return extension switch
+        {
+            ".txt" or ".md" or ".log" => "📄",
+            ".csv" or ".json" or ".xml" or ".yml" or ".yaml" => "📊",
+            ".png" or ".jpg" or ".jpeg" or ".gif" or ".webp" => "🖼️",
+            ".pdf" => "📕",
+            ".zip" or ".rar" or ".7z" => "📦",
+            _ => "📎"
+        };
+    }
 
     private Control CreateProjectHeader(string path)
     {

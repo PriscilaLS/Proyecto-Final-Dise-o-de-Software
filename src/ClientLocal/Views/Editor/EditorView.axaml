@@ -210,6 +210,7 @@
               <MenuItem Header="Abrir Proyecto" Name="OpenProjectMenu"/>
               <MenuItem Header="Nuevo Script" Name="NewScriptMenu"/>
               <MenuItem Header="Nueva Carpeta" Name="NewFolderMenu"/>
+              <MenuItem Header="Importar Archivo" Name="ImportFileMenu"/>
               <MenuItem Header="Guardar Script" Name="SaveScriptMenu"/>
               <MenuItem Header="Git controlado" Name="GitToolMenu"/>
             </MenuFlyout>

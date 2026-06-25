@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -79,20 +80,22 @@ public partial class EditorView : Window
             },
             onRenameRequest: async (currentName) =>
             {
-                var dialog = new TextInputDialog("Renombrar Script", "Nuevo Nombre:", false, currentName);
+                var dialog = new TextInputDialog("Renombrar Archivo", "Nuevo Nombre:", false, currentName);
                 return await dialog.ShowDialog<string?>(this);
             },
             onFileDeleted: (path) =>
             {
                 var tab = _tabService.FindByPath(path);
                 if (tab != null) CloseTab(tab);
-            }
+            },
+            onExternalFilesDropped: ImportFilesAsync
         );
 
         // Menú y botones
         NewProjectMenu.Click += OnNewProject;
         NewScriptMenu.Click += OnNewScript;
         NewFolderMenu.Click += OnNewFolder;
+        ImportFileMenu.Click += OnImportFile;
         OpenProjectMenu.Click += OnOpenProject;
         SaveScriptMenu.Click += OnSaveScript;
         GitToolMenu.Click += OnOpenGitTool;
@@ -633,6 +636,76 @@ public partial class EditorView : Window
         _explorerService.Show(_projectService.CurrentProjectPath);
     }
 
+    private async void OnImportFile(object? sender, RoutedEventArgs e)
+    {
+        if (_projectService.CurrentProjectPath == null) return;
+
+        var files = await StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+        {
+            Title = "Importar archivos al proyecto",
+            AllowMultiple = true
+        });
+
+        if (files == null || files.Count == 0) return;
+
+        var sourcePaths = files
+            .Select(file =>
+            {
+                try { return file.Path?.LocalPath; }
+                catch { return null; }
+            })
+            .Where(path => !string.IsNullOrWhiteSpace(path) && File.Exists(path))
+            .Select(path => path!)
+            .ToArray();
+
+        await ImportFilesAsync(_explorerService.GetSelectedDirectory(), sourcePaths);
+    }
+
+    private async Task ImportFilesAsync(string targetDirectory, IReadOnlyList<string> sourcePaths)
+    {
+        if (_projectService.CurrentProjectPath == null) return;
+        if (!Directory.Exists(targetDirectory)) return;
+
+        int imported = 0;
+
+        foreach (var sourcePath in sourcePaths)
+        {
+            if (string.IsNullOrWhiteSpace(sourcePath) || !File.Exists(sourcePath))
+                continue;
+
+            try
+            {
+                string destinationPath = GetUniqueDestinationPath(targetDirectory, Path.GetFileName(sourcePath));
+                File.Copy(sourcePath, destinationPath);
+                imported++;
+            }
+            catch (Exception ex)
+            {
+                await AlertDialog.Show(this, "Error al importar archivo", $"No se pudo copiar {Path.GetFileName(sourcePath)}.\n\n{ex.Message}");
+            }
+        }
+
+        _explorerService.Show(_projectService.CurrentProjectPath);
+
+    }
+
+    private static string GetUniqueDestinationPath(string directory, string fileName)
+    {
+        string destinationPath = Path.Combine(directory, fileName);
+        if (!File.Exists(destinationPath) && !Directory.Exists(destinationPath))
+            return destinationPath;
+
+        string name = Path.GetFileNameWithoutExtension(fileName);
+        string extension = Path.GetExtension(fileName);
+
+        for (int i = 1; ; i++)
+        {
+            string candidate = Path.Combine(directory, $"{name} ({i}){extension}");
+            if (!File.Exists(candidate) && !Directory.Exists(candidate))
+                return candidate;
+        }
+    }
+
     // ── Editor ───────────────────────────────────────────────────────────────
 
     private async void OnFileSelected(object? sender, SelectionChangedEventArgs e)
@@ -641,7 +714,34 @@ public partial class EditorView : Window
         if (item.Tag is not string fullPath)                    return;
         if (Directory.Exists(fullPath))                         return;
 
-        string content = File.ReadAllText(fullPath);
+        if (!IsPythonFile(fullPath) && !IsEditableTextFile(fullPath))
+        {
+            await AlertDialog.Show(
+                this,
+                "Archivo adjunto",
+                "Este archivo está adjunto al proyecto, pero no se puede editar desde el IDE."
+            );
+            return;
+        }
+
+        string content;
+        try
+        {
+            content = File.ReadAllText(fullPath);
+        }
+        catch (Exception ex)
+        {
+            await AlertDialog.Show(this, "Error al abrir archivo", ex.Message);
+            return;
+        }
+
+        if (!IsPythonFile(fullPath))
+        {
+            TextEditor.IsReadOnly = false;
+            OpenTab(fullPath, content);
+            return;
+        }
+
         bool   hasSig  = _integrityService.HasSignature(fullPath);
         bool   valid   = _integrityService.Validate(fullPath, content);
 
@@ -708,7 +808,8 @@ public partial class EditorView : Window
         _tabService.ActiveTab.IsModified = false;
 
         File.WriteAllText(_currentFilePath, content);
-        _integrityService.Sign(_currentFilePath, content);
+        if (IsPythonFile(_currentFilePath))
+            _integrityService.Sign(_currentFilePath, content);
         
         UpdateSignatureStatus(_currentFilePath, content);
     }
@@ -716,6 +817,12 @@ public partial class EditorView : Window
     private async void OnRunScript(object? sender, RoutedEventArgs e)
     {
         if (_currentFilePath == null) return;
+        if (!IsPythonFile(_currentFilePath))
+        {
+            await AlertDialog.Show(this, "Ejecución no disponible", "Solo se pueden ejecutar archivos Python.");
+            return;
+        }
+
         OnSaveScript(null, new RoutedEventArgs());
 
         if (!_consoleOpen) ExpandConsole();
@@ -842,6 +949,12 @@ public partial class EditorView : Window
     }
     private void UpdateSignatureStatus(string filePath, string content)
     {
+        if (!IsPythonFile(filePath))
+        {
+            SignatureStatusText.IsVisible = false;
+            return;
+        }
+
         SignatureStatusText.IsVisible = true;
 
         bool hasSig = _integrityService.HasSignature(filePath);
@@ -853,5 +966,24 @@ public partial class EditorView : Window
             true              => ("● Firma inválida", new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.Parse("#f87171"))),
             _                 => ("● Firma válida",   new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.Parse("#9ece6a")))
         };
+    }
+
+    private static bool IsPythonFile(string filePath) =>
+        string.Equals(Path.GetExtension(filePath), ".py", StringComparison.OrdinalIgnoreCase);
+
+    private static bool IsEditableTextFile(string filePath)
+    {
+        string extension = Path.GetExtension(filePath);
+        return string.Equals(extension, ".txt", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(extension, ".csv", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(extension, ".json", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(extension, ".md", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(extension, ".xml", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(extension, ".yml", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(extension, ".yaml", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(extension, ".ini", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(extension, ".toml", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(extension, ".log", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(extension, ".sql", StringComparison.OrdinalIgnoreCase);
     }
 }
