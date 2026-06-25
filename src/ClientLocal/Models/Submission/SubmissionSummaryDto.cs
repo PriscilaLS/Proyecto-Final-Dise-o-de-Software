@@ -32,6 +32,7 @@ namespace ClientLocal.Models.Submission
         public string? SubmittedAt { get; set; }
 
         [JsonPropertyName("is_late")]
+        [JsonConverter(typeof(FlexibleBooleanJsonConverter))]
         public bool IsLate { get; set; }
 
         [JsonPropertyName("total_versions")]

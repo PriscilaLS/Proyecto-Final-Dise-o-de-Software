@@ -219,11 +219,19 @@ namespace ClientLocal.Views.Auth
 
                 if (_resultTextBlock != null)
                 {
+                    var versionText = response.VersionNumber > 0
+                        ? $"Version enviada: v{response.VersionNumber}\n"
+                        : "Version enviada: registrada por el backend\n";
+
+                    var versionIdText = response.VersionId > 0
+                        ? $"ID de version: {response.VersionId}\n"
+                        : string.Empty;
+
                     _resultTextBlock.Text =
                         $"Entrega registrada correctamente.\n\n" +
                         $"ID de entrega: {response.SubmissionId}\n" +
-                        $"ID de version: {response.VersionId}\n" +
-                        $"Version enviada: v{response.VersionNumber}\n" +
+                        versionIdText +
+                        versionText +
                         $"Fecha y hora: {response.SubmittedAt}\n" +
                         $"Puntualidad: {response.StatusText}";
                 }

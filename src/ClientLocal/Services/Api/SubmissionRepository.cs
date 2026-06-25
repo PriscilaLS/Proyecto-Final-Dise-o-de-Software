@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
@@ -43,8 +44,8 @@ namespace ClientLocal.Services.Api
 
                 if (!response.IsSuccessStatusCode)
                     result.Error ??= $"Error {response.StatusCode}: {body}";
-                else if (result.SubmissionId <= 0 || result.VersionId <= 0 || result.VersionNumber <= 0)
-                    result.Error = $"Respuesta de entrega incompleta del backend: {body}";
+                else if (result.SubmissionId <= 0 && result.Id > 0)
+                    result.SubmissionId = result.Id;
 
                 return result;
             }
@@ -65,8 +66,7 @@ namespace ClientLocal.Services.Api
             if (!response.IsSuccessStatusCode)
                 throw new Exception($"Error {response.StatusCode}: {body}");
 
-            return JsonSerializer.Deserialize<List<SubmissionVersionDto>>(body, _jsonOptions)
-                   ?? new List<SubmissionVersionDto>();
+            return DeserializeListResponse<SubmissionVersionDto>(body, "versions");
         }
 
         public async Task<List<SubmissionSummaryDto>> GetSubmissionsByTaskAsync(int taskId)
@@ -77,8 +77,7 @@ namespace ClientLocal.Services.Api
             if (!response.IsSuccessStatusCode)
                 throw new Exception($"Error {response.StatusCode}: {body}");
 
-            return JsonSerializer.Deserialize<List<SubmissionSummaryDto>>(body, _jsonOptions)
-                   ?? new List<SubmissionSummaryDto>();
+            return DeserializeListResponse<SubmissionSummaryDto>(body, "submissions");
         }
 
         public async Task<List<SubmissionVersionDto>> GetVersionsBySubmissionAsync(int submissionId)
@@ -89,8 +88,72 @@ namespace ClientLocal.Services.Api
             if (!response.IsSuccessStatusCode)
                 throw new Exception($"Error {response.StatusCode}: {body}");
 
-            return JsonSerializer.Deserialize<List<SubmissionVersionDto>>(body, _jsonOptions)
-                   ?? new List<SubmissionVersionDto>();
+            return DeserializeListResponse<SubmissionVersionDto>(body, "versions");
+        }
+
+        private List<T> DeserializeListResponse<T>(string body, string preferredProperty)
+        {
+            try
+            {
+                using var document = JsonDocument.Parse(body);
+                var root = document.RootElement;
+
+                if (root.ValueKind == JsonValueKind.Array)
+                    return JsonSerializer.Deserialize<List<T>>(root.GetRawText(), _jsonOptions)
+                           ?? new List<T>();
+
+                if (root.ValueKind == JsonValueKind.Object)
+                {
+                    if (TryGetError(root, out var error))
+                        throw new Exception(error);
+
+                    var candidateNames = new[] { preferredProperty, "data", "items", "result" };
+                    foreach (var name in candidateNames.Distinct(StringComparer.OrdinalIgnoreCase))
+                    {
+                        if (TryGetProperty(root, name, out var property) &&
+                            property.ValueKind == JsonValueKind.Array)
+                        {
+                            return JsonSerializer.Deserialize<List<T>>(property.GetRawText(), _jsonOptions)
+                                   ?? new List<T>();
+                        }
+                    }
+                }
+
+                throw new Exception($"Respuesta inesperada del backend: {body}");
+            }
+            catch (JsonException ex)
+            {
+                throw new Exception($"Respuesta JSON invalida del backend: {ex.Message}. Respuesta: {body}");
+            }
+        }
+
+        private static bool TryGetError(JsonElement root, out string error)
+        {
+            error = string.Empty;
+
+            if (!TryGetProperty(root, "error", out var property))
+                return false;
+
+            error = property.ValueKind == JsonValueKind.String
+                ? property.GetString() ?? "Error del backend"
+                : property.GetRawText();
+
+            return !string.IsNullOrWhiteSpace(error);
+        }
+
+        private static bool TryGetProperty(JsonElement root, string name, out JsonElement property)
+        {
+            foreach (var item in root.EnumerateObject())
+            {
+                if (string.Equals(item.Name, name, StringComparison.OrdinalIgnoreCase))
+                {
+                    property = item.Value;
+                    return true;
+                }
+            }
+
+            property = default;
+            return false;
         }
     }
 }
